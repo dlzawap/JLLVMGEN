@@ -4,7 +4,6 @@ import jllvmgen.misc.LLVMException;
 import jllvmgen.types.ILLVMMemoryType;
 
 /**
- * @author Manuel
  * Holds a value data type and suitable value.
  */
 public class LLVMDataValue
@@ -15,15 +14,27 @@ public class LLVMDataValue
 	private ILLVMMemoryType type;
 	// Holds value (integer, float or constructor for arrays/vectors/structs)
 	private String value;
+	// This means that only the value is used.
+	private boolean isConstant;
 	
 	public static LLVMDataValue create(String identifier, ILLVMMemoryType type) throws LLVMException
 	{
-		return new LLVMDataValue(identifier, type, null);
+		return new LLVMDataValue(identifier, type, null, false);
 	}
 	
 	public static LLVMDataValue create(String identifier, ILLVMMemoryType type, String value) throws LLVMException 
 	{
-		return new LLVMDataValue(identifier, type, value);
+		return new LLVMDataValue(identifier, type, value, false);
+	}
+	
+	public static LLVMDataValue create(String identifier, ILLVMMemoryType type, String value, boolean isConstant) throws LLVMException 
+	{
+		return new LLVMDataValue(identifier, type, value, isConstant);
+	}
+	
+	public static LLVMDataValue createConstant(ILLVMMemoryType type, String value) throws LLVMException 
+	{
+		return new LLVMDataValue(null, type, value, false);
 	}
 	
 	
@@ -33,10 +44,10 @@ public class LLVMDataValue
 	 * @param value can be null.
 	 * @throws LLVMException
 	 */
-	public LLVMDataValue(String identifier, ILLVMMemoryType type, String value) throws LLVMException
+	public LLVMDataValue(String identifier, ILLVMMemoryType type, String value, boolean isConstant) throws LLVMException
 	{
-		if (identifier == null)
-			throw new LLVMException("Parameter \"identifier\" is null or empty.");
+		//if (identifier == null)
+		//	throw new LLVMException("Parameter \"identifier\" is null or empty.");
 		if (type == null)
 			throw new LLVMException("Parameter \"type\" is null or empty.");
 		if (type.isPointerType())
@@ -46,14 +57,15 @@ public class LLVMDataValue
 		
 		this.type = type;
 		this.value = value;
+		this.isConstant = isConstant;
 	}
 	
 	public String getIdentifierOrValue()
 	{
-		if (value != null)
+		if (isConstant)
 			return value;
-		else
-			return "%" + identifier;
+		
+		return getIdentifier();
 	}
 	
 	public String getIdentifierWithoutPrefix()
