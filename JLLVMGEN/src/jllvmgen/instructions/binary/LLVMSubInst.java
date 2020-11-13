@@ -2,30 +2,41 @@ package jllvmgen.instructions.binary;
 
 import jllvmgen.LLVMDataValue;
 import jllvmgen.LLVMFunction;
-import jllvmgen.enums.LLVMFastMathFlags;
 import jllvmgen.instructions.ILLVMBaseInst;
 import jllvmgen.misc.LLVMException;
 import jllvmgen.types.LLVMValueType;
 import jllvmgen.types.LLVMVectorType;
 
-public class LLVMFAddInst implements ILLVMBaseInst
+public class LLVMSubInst implements ILLVMBaseInst
 {
 	private LLVMDataValue result;
 	private LLVMDataValue op1;
 	private LLVMDataValue op2;
-	private LLVMFastMathFlags[] fastMathFlags;
 	
-	public static LLVMFAddInst create(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2) throws LLVMException
+	private boolean noUnsignedWrap;
+	private boolean noSignedWrap;
+	
+	public static LLVMSubInst create(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2, boolean noUnsignedWrap, boolean noSignedWrap) throws LLVMException
 	{
-		return new LLVMFAddInst(fn, op1, op2, null);
+		return new LLVMSubInst(fn, op1, op2, noUnsignedWrap, noSignedWrap);
 	}
 	
-	public static LLVMFAddInst create(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2, LLVMFastMathFlags... fastMathFlags) throws LLVMException
+	public static LLVMSubInst createNoUnsignedWrap(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2) throws LLVMException
 	{
-		return new LLVMFAddInst(fn, op1, op2, fastMathFlags);
+		return new LLVMSubInst(fn, op1, op2, true, false);
 	}
 	
-	public LLVMFAddInst(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2, LLVMFastMathFlags[] fastMathFlags) throws LLVMException
+	public static LLVMSubInst createNoSignedWrap(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2) throws LLVMException
+	{
+		return new LLVMSubInst(fn, op1, op2, false, true);
+	}
+	
+	public static LLVMSubInst createNoUnsignedAndSignedWrap(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2) throws LLVMException
+	{
+		return new LLVMSubInst(fn, op1, op2, true, true);
+	}
+	
+	public LLVMSubInst(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2, boolean noUnsignedWrap, boolean noSignedWrap) throws LLVMException
 	{
 		if (fn == null)
 			throw new LLVMException("Parameter \"fn\" is null or empty.");
@@ -38,48 +49,46 @@ public class LLVMFAddInst implements ILLVMBaseInst
 					+ "Op1: " + op1.getType().getTypeDefinitionString() + " "
 					+ "Op2: " + op2.getType().getTypeDefinitionString());
 		
-		// Check if both operands are value or vector types with an floating-point base type.
+		// Check if both operands are value or vector types with an integer base type.
 		if (op1.getType().isValueType())
 		{
 			LLVMValueType temp = (LLVMValueType)op1.getType();
-			if (!temp.holdsFloatingPoint())
-				throw new LLVMException("Operands must be from floating-point.");
+			if (!temp.holdsPrimInt())
+				throw new LLVMException("Operands must be from integers.");
 		}
 		else if (op2.getType().isVectorType())
 		{
 			if (((LLVMVectorType)op1.getType()).getBaseType().isValueType())
 			{
 				LLVMValueType temp = (LLVMValueType)((LLVMVectorType)op1.getType()).getBaseType();
-				if (!temp.holdsFloatingPoint())
-					throw new LLVMException("Operands must be vectors of floating-point values.");
+				if (!temp.holdsPrimInt())
+					throw new LLVMException("Operands must be vectors of integer values.");
 			}
-			else throw new LLVMException("Operands base types are not floating-point types.");
+			else throw new LLVMException("Operands base types are not value types.");
 		}
 		
 		this.op1 = op1;
 		this.op2 = op2;
-		this.fastMathFlags = fastMathFlags;
+		
+		this.noUnsignedWrap = noUnsignedWrap;
+		this.noSignedWrap = noSignedWrap;
 		
 		// If activated, register instruction.
 		if (fn.autoRegisterInstructions())
 			fn.registerInst(this);
 	}
-
+	
 	@Override
 	public String getInstructionString() throws LLVMException 
 	{
 		StringBuilder sb = new StringBuilder(result.getIdentifier());
 		
-		sb.append(" = fadd ");
+		sb.append(" = sub ");
 		
-		if (fastMathFlags != null)
-		{
-			for (LLVMFastMathFlags flag : fastMathFlags)
-			{
-				sb.append(flag);
-				sb.append(' ');
-			}
-		}
+		if (noUnsignedWrap)
+			sb.append("nuw ");
+		if (noSignedWrap)
+			sb.append("nsw ");
 		
 		sb.append(result.getType().getTypeDefinitionString());
 		sb.append(' ');

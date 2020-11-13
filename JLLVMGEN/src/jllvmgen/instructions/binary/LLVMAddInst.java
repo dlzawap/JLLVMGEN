@@ -11,8 +11,8 @@ import jllvmgen.types.LLVMVectorType;
  * The ‘add’ instruction returns the sum of its two operands.
  * The two arguments to the ‘add’ instruction must be integer or vector of integer values. Both arguments must have identical types.
  */
-public class LLVMAddInst implements ILLVMBaseInst {
-
+public class LLVMAddInst implements ILLVMBaseInst
+{
 	private LLVMDataValue result;
 	private LLVMDataValue op1;
 	private LLVMDataValue op2;
