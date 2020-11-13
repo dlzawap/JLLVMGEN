@@ -1,19 +1,20 @@
 package jllvmgen.instructions.terminator;
 
+import jllvmgen.LLVMDataValue;
 import jllvmgen.instructions.ILLVMBaseInst;
 import jllvmgen.misc.LLVMException;
 import jllvmgen.types.LLVMLabelType;
-import jllvmgen.types.extension.LLVMCondition;
+import jllvmgen.types.LLVMValueType;
 
 public class LLVMBrInst implements ILLVMBaseInst
 {
 	private boolean isConditional;
-	private LLVMCondition condition;
+	private LLVMDataValue condition;
 	private LLVMLabelType ifTrue;
 	private LLVMLabelType ifFalse;
 	private LLVMLabelType unconditionalLabel;
 	
-	public static LLVMBrInst createConditional(LLVMCondition condition, LLVMLabelType ifTrue, LLVMLabelType ifFalse) throws LLVMException
+	public static LLVMBrInst createConditional(LLVMDataValue condition, LLVMLabelType ifTrue, LLVMLabelType ifFalse) throws LLVMException
 	{
 		return new LLVMBrInst(condition, ifTrue, ifFalse, null);
 	}
@@ -23,7 +24,7 @@ public class LLVMBrInst implements ILLVMBaseInst
 		return new LLVMBrInst(null, null, null, label);
 	}
 	
-	private LLVMBrInst(LLVMCondition condition,
+	private LLVMBrInst(LLVMDataValue condition,
 			LLVMLabelType ifTrue, LLVMLabelType ifFalse, LLVMLabelType unconditionalLabel) throws LLVMException
 	{
 		if (condition == null && unconditionalLabel != null)
@@ -37,6 +38,11 @@ public class LLVMBrInst implements ILLVMBaseInst
 				 ifFalse != null &&
 				 unconditionalLabel == null)
 		{
+			// Check if condition holds a value/identifier from type i1.
+			if (!checkIfCondition(condition))
+				throw new LLVMException("Condition(i1) parameter is not a real condition."
+						+ "condition type: " + condition.getType().getTypeDefinitionString());
+			
 			// conditional branch
 			isConditional = true;
 			
@@ -46,6 +52,22 @@ public class LLVMBrInst implements ILLVMBaseInst
 		}
 		else
 			throw new LLVMException("Unknown branch.");
+	}
+	
+	
+	/**
+	 * @param condition
+	 * @return true if condition is from type i1.
+	 */
+	private boolean checkIfCondition(LLVMDataValue condition)
+	{
+		if (condition == null)
+			return false;
+		
+		if (!condition.getType().isValueType())
+			return false;
+		
+		return ((LLVMValueType)condition.getType()).holdsBoolean();
 	}
 
 	@Override

@@ -153,6 +153,14 @@ public class LLVMValueType extends LLVMBaseDataType implements ILLVMMemoryType
 				return false;
 		}
 	}
+	
+	public boolean holdsBoolean()
+	{
+		if (!isPrimitiveType())
+			return false;
+		
+		return primitiveType.getType() == LLVMPrimitiveTypes._bool;
+	}
 
 	@Override
 	public boolean isValueType() {
