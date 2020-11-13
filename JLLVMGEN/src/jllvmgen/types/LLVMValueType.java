@@ -118,7 +118,12 @@ public class LLVMValueType extends LLVMBaseDataType implements ILLVMMemoryType
 		}
 	}
 	
-	public boolean holdsPrimInt()
+	public boolean holdsInteger()
+	{
+		return holdsSignedInteger() || holdsUnsignedInteger();
+	}
+	
+	public boolean holdsSignedInteger()
 	{
 		if (!isPrimitiveType())
 			return false;
@@ -137,6 +142,18 @@ public class LLVMValueType extends LLVMBaseDataType implements ILLVMMemoryType
 				return true;
 			case _i256:
 				return true;
+			default:
+				return false;
+		}
+	}
+	
+	public boolean holdsUnsignedInteger()
+	{
+		if (!isPrimitiveType())
+			return false;
+		
+		switch (super.primitiveType.getType())
+		{
 			case _u8:
 				return true;
 			case _u16:

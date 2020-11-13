@@ -57,7 +57,7 @@ public class LLVMAddInst implements ILLVMBaseInst
 		if (op1.getType().isValueType())
 		{
 			LLVMValueType temp = (LLVMValueType)op1.getType();
-			if (!temp.holdsPrimInt())
+			if (!temp.holdsInteger())
 				throw new LLVMException("Operands must be from integers.");
 		}
 		else if (op2.getType().isVectorType())
@@ -65,7 +65,7 @@ public class LLVMAddInst implements ILLVMBaseInst
 			if (((LLVMVectorType)op1.getType()).getBaseType().isValueType())
 			{
 				LLVMValueType temp = (LLVMValueType)((LLVMVectorType)op1.getType()).getBaseType();
-				if (!temp.holdsPrimInt())
+				if (!temp.holdsInteger())
 					throw new LLVMException("Operands must be vectors of integer values.");
 			}
 			else throw new LLVMException("Operands base types are not value types.");
