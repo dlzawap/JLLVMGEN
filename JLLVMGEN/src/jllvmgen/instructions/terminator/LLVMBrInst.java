@@ -74,8 +74,16 @@ public class LLVMBrInst implements ILLVMBaseInst
 	public String getInstructionString() throws LLVMException
 	{
 		if (isConditional)
-			return "br";
-		
+		{
+			StringBuilder sb = new StringBuilder("br i1");
+			sb.append(condition.getIdentifierOrValue());
+			sb.append(", label ");
+			sb.append(ifTrue.getName());
+			sb.append(", label");
+			sb.append(ifFalse.getName());
+			
+			return sb.toString();
+		}
 		
 		return "br label " + unconditionalLabel.getName();
 	}
