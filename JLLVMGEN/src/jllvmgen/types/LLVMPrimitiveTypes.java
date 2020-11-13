@@ -50,9 +50,9 @@ public enum LLVMPrimitiveTypes
 			case _u256:
 				return "i256";
 			case _f32:
-				return "f32";
+				return "float";
 			case _f64:
-				return "f64";
+				return "double";
 			case _bool:
 				return "i1";
 			case _char:
