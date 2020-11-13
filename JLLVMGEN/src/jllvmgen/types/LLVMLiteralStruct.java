@@ -58,4 +58,16 @@ public class LLVMLiteralStruct extends LLVMBaseStruct
 	{
 		return true;
 	}
+	
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (obj == null)
+			return false;
+		
+		if (obj instanceof LLVMLiteralStruct)
+			return super.equals(obj);
+		
+		return false;
+	}
 }

@@ -33,4 +33,20 @@ public class LLVMIdentifiedStruct extends LLVMBaseStruct
 	{
 		return identifier;
 	}
+	
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (obj == null)
+			return false;
+		
+		if (obj instanceof LLVMIdentifiedStruct)
+		{
+			LLVMIdentifiedStruct other = (LLVMIdentifiedStruct)obj;
+			if (identifier.equals(other.identifier))
+				return super.equals(obj);
+		}
+		
+		return false;
+	}
 }

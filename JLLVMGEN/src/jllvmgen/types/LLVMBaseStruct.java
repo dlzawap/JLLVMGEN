@@ -60,6 +60,7 @@ public abstract class LLVMBaseStruct implements ILLVMCodeCreationFunctionality
 		throw new LLVMException("isIdentifiedStruct() is not implemented.");
 	}
 	
+	
 	@Override
 	public String getTypeDefinitionString() throws LLVMException {
 		StringBuilder sb = new StringBuilder("{");
@@ -77,10 +78,25 @@ public abstract class LLVMBaseStruct implements ILLVMCodeCreationFunctionality
 		return sb.toString();
 	}
 	
+	/**
+	 * Returns true if both base structs are from the same type
+	 * and have the same members size.
+	 */
 	@Override
 	public boolean equals(Object obj)
 	{
-		// TODO Auto-generated method stub
-		return super.equals(obj);
+		if (obj == null)
+			return false;
+		
+		if (obj instanceof LLVMBaseStruct)
+		{
+			LLVMBaseStruct other = (LLVMBaseStruct)obj;
+			if (members.size() > 0 && members.size() == other.members.size())
+			{
+				return members.get(0).equals(other.members.get(0));
+			}
+		}
+		
+		return false;
 	}
 }
