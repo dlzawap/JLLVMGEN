@@ -8,6 +8,11 @@ import jllvmgen.misc.LLVMException;
 import jllvmgen.types.LLVMValueType;
 import jllvmgen.types.LLVMVectorType;
 
+
+/** 
+ * The ‘fsub’ instruction returns the difference of its two operands.
+ * The two arguments to the ‘fsub’ instruction must be floating-point or vector of floating-point values. Both arguments must have identical types.
+ */
 public class LLVMFSubInst implements ILLVMBaseInst
 {
 	private LLVMDataValue result;

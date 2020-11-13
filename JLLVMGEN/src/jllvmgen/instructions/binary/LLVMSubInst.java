@@ -7,6 +7,11 @@ import jllvmgen.misc.LLVMException;
 import jllvmgen.types.LLVMValueType;
 import jllvmgen.types.LLVMVectorType;
 
+/**
+ * The ‘sub’ instruction returns the difference of its two operands.
+ * Note that the ‘sub’ instruction is used to represent the ‘neg’ instruction present in most other intermediate representations.
+ * The two arguments to the ‘sub’ instruction must be integer or vector of integer values. Both arguments must have identical types.
+ */
 public class LLVMSubInst implements ILLVMBaseInst
 {
 	private LLVMDataValue result;
