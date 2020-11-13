@@ -2,20 +2,18 @@ package jllvmgen.instructions.binary;
 
 import jllvmgen.LLVMDataValue;
 import jllvmgen.LLVMFunction;
-import jllvmgen.enums.LLVMFastMathFlags;
 import jllvmgen.instructions.ILLVMBaseInst;
 import jllvmgen.misc.LLVMException;
 import jllvmgen.types.LLVMValueType;
 import jllvmgen.types.LLVMVectorType;
 
-public class LLVMUDivInst implements ILLVMBaseInst
+public class LLVMSRemInst implements ILLVMBaseInst
 {
 	private LLVMDataValue result;
 	private LLVMDataValue op1;
 	private LLVMDataValue op2;
-	private boolean isExact;
 	
-	public LLVMUDivInst(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2, boolean isExact) throws LLVMException
+	public LLVMSRemInst(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2) throws LLVMException
 	{
 		if (fn == null)
 			throw new LLVMException("Parameter \"fn\" is null or empty.");
@@ -32,23 +30,22 @@ public class LLVMUDivInst implements ILLVMBaseInst
 		if (op1.getType().isValueType())
 		{
 			LLVMValueType temp = (LLVMValueType)op1.getType();
-			if (!temp.holdsUnsignedInteger())
-				throw new LLVMException("Operands must be values from with unsigned integer type.");
+			if (!temp.holdsInteger())
+				throw new LLVMException("Operands must be values from with signed integer type.");
 		}
 		else if (op2.getType().isVectorType())
 		{
 			if (((LLVMVectorType)op1.getType()).getBaseType().isValueType())
 			{
 				LLVMValueType temp = (LLVMValueType)((LLVMVectorType)op1.getType()).getBaseType();
-				if (!temp.holdsUnsignedInteger())
-					throw new LLVMException("Operands must be vectors of unsigned integer values.");
+				if (!temp.holdsInteger())
+					throw new LLVMException("Operands must be vectors of signed integer values.");
 			}
-			else throw new LLVMException("Operands base types are not unsigned integer types.");
+			else throw new LLVMException("Operands base types are not signed integer types.");
 		}
 		
 		this.op1 = op1;
 		this.op2 = op2;
-		this.isExact = isExact;
 		
 		// Pre-generate value.
 		result = LLVMDataValue.create(fn.getNextFreeLocalVariableValueName(), op1.getType());
@@ -68,10 +65,7 @@ public class LLVMUDivInst implements ILLVMBaseInst
 	{
 		StringBuilder sb = new StringBuilder(result.getIdentifier());
 		
-		sb.append(" = udiv ");
-		
-		if (isExact)
-			sb.append("exact ");
+		sb.append(" = srem ");
 		
 		sb.append(result.getType().getTypeDefinitionString());
 		sb.append(' ');

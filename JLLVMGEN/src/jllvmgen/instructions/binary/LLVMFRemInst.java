@@ -8,14 +8,24 @@ import jllvmgen.misc.LLVMException;
 import jllvmgen.types.LLVMValueType;
 import jllvmgen.types.LLVMVectorType;
 
-public class LLVMUDivInst implements ILLVMBaseInst
+public class LLVMFRemInst implements ILLVMBaseInst
 {
 	private LLVMDataValue result;
 	private LLVMDataValue op1;
 	private LLVMDataValue op2;
-	private boolean isExact;
+	private LLVMFastMathFlags[] fastMathFlags;
 	
-	public LLVMUDivInst(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2, boolean isExact) throws LLVMException
+	public static LLVMFRemInst create(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2) throws LLVMException
+	{
+		return new LLVMFRemInst(fn, op1, op2, null);
+	}
+	
+	public static LLVMFRemInst create(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2, LLVMFastMathFlags... fastMathFlags) throws LLVMException
+	{
+		return new LLVMFRemInst(fn, op1, op2, fastMathFlags);
+	}
+	
+	public LLVMFRemInst(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2, LLVMFastMathFlags[] fastMathFlags) throws LLVMException
 	{
 		if (fn == null)
 			throw new LLVMException("Parameter \"fn\" is null or empty.");
@@ -32,23 +42,23 @@ public class LLVMUDivInst implements ILLVMBaseInst
 		if (op1.getType().isValueType())
 		{
 			LLVMValueType temp = (LLVMValueType)op1.getType();
-			if (!temp.holdsUnsignedInteger())
-				throw new LLVMException("Operands must be values from with unsigned integer type.");
+			if (!temp.holdsFloatingPoint())
+				throw new LLVMException("Operands must be from floating-point.");
 		}
 		else if (op2.getType().isVectorType())
 		{
 			if (((LLVMVectorType)op1.getType()).getBaseType().isValueType())
 			{
 				LLVMValueType temp = (LLVMValueType)((LLVMVectorType)op1.getType()).getBaseType();
-				if (!temp.holdsUnsignedInteger())
-					throw new LLVMException("Operands must be vectors of unsigned integer values.");
+				if (!temp.holdsFloatingPoint())
+					throw new LLVMException("Operands must be vectors of floating-point values.");
 			}
-			else throw new LLVMException("Operands base types are not unsigned integer types.");
+			else throw new LLVMException("Operands base types are not floating-point types.");
 		}
 		
 		this.op1 = op1;
 		this.op2 = op2;
-		this.isExact = isExact;
+		this.fastMathFlags = fastMathFlags;
 		
 		// Pre-generate value.
 		result = LLVMDataValue.create(fn.getNextFreeLocalVariableValueName(), op1.getType());
@@ -62,16 +72,22 @@ public class LLVMUDivInst implements ILLVMBaseInst
 	{
 		return result;
 	}
-	
+
 	@Override
 	public String getInstructionString() throws LLVMException 
 	{
 		StringBuilder sb = new StringBuilder(result.getIdentifier());
 		
-		sb.append(" = udiv ");
+		sb.append(" = frem ");
 		
-		if (isExact)
-			sb.append("exact ");
+		if (fastMathFlags != null)
+		{
+			for (LLVMFastMathFlags flag : fastMathFlags)
+			{
+				sb.append(flag);
+				sb.append(' ');
+			}
+		}
 		
 		sb.append(result.getType().getTypeDefinitionString());
 		sb.append(' ');

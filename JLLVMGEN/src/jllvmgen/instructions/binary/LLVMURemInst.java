@@ -2,20 +2,18 @@ package jllvmgen.instructions.binary;
 
 import jllvmgen.LLVMDataValue;
 import jllvmgen.LLVMFunction;
-import jllvmgen.enums.LLVMFastMathFlags;
 import jllvmgen.instructions.ILLVMBaseInst;
 import jllvmgen.misc.LLVMException;
 import jllvmgen.types.LLVMValueType;
 import jllvmgen.types.LLVMVectorType;
 
-public class LLVMUDivInst implements ILLVMBaseInst
+public class LLVMURemInst implements ILLVMBaseInst
 {
 	private LLVMDataValue result;
 	private LLVMDataValue op1;
 	private LLVMDataValue op2;
-	private boolean isExact;
 	
-	public LLVMUDivInst(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2, boolean isExact) throws LLVMException
+	public LLVMURemInst(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2) throws LLVMException
 	{
 		if (fn == null)
 			throw new LLVMException("Parameter \"fn\" is null or empty.");
@@ -48,7 +46,6 @@ public class LLVMUDivInst implements ILLVMBaseInst
 		
 		this.op1 = op1;
 		this.op2 = op2;
-		this.isExact = isExact;
 		
 		// Pre-generate value.
 		result = LLVMDataValue.create(fn.getNextFreeLocalVariableValueName(), op1.getType());
@@ -68,10 +65,7 @@ public class LLVMUDivInst implements ILLVMBaseInst
 	{
 		StringBuilder sb = new StringBuilder(result.getIdentifier());
 		
-		sb.append(" = udiv ");
-		
-		if (isExact)
-			sb.append("exact ");
+		sb.append(" = urem ");
 		
 		sb.append(result.getType().getTypeDefinitionString());
 		sb.append(' ');

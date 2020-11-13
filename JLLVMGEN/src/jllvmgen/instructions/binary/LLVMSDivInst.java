@@ -49,9 +49,17 @@ public class LLVMSDivInst implements ILLVMBaseInst
 		this.op2 = op2;
 		this.isExact = isExact;
 		
+		// Pre-generate value.
+		result = LLVMDataValue.create(fn.getNextFreeLocalVariableValueName(), op1.getType());
+		
 		// If activated, register instruction.
 		if (fn.autoRegisterInstructions())
 			fn.registerInst(this);
+	}
+	
+	public LLVMDataValue getResult()
+	{
+		return result;
 	}
 	
 	@Override

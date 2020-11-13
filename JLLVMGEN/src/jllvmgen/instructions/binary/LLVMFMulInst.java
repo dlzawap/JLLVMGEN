@@ -64,9 +64,17 @@ public class LLVMFMulInst implements ILLVMBaseInst
 		this.op2 = op2;
 		this.fastMathFlags = fastMathFlags;
 		
+		// Pre-generate value.
+		result = LLVMDataValue.create(fn.getNextFreeLocalVariableValueName(), op1.getType());
+		
 		// If activated, register instruction.
 		if (fn.autoRegisterInstructions())
 			fn.registerInst(this);
+	}
+	
+	public LLVMDataValue getResult()
+	{
+		return result;
 	}
 
 	@Override
