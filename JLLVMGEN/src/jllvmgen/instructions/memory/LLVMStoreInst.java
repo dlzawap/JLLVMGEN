@@ -42,8 +42,8 @@ public class LLVMStoreInst  implements ILLVMBaseInst {
 			throw new LLVMException("Parameter \"value\" is null or empty.");
 		if (!value.getType().isValueType() && ((LLVMValueType)value.getType()).isPrimitiveType())
 			throw new LLVMException("Store instruction are only allowed on primitive types");
-		if (value.getValue() == null)
-			throw new LLVMException("Value is null or not defined.");
+		//if (value.getValue() == null)
+		//	throw new LLVMException("Value is null or not defined.");
 		if (pointer == null)
 			throw new LLVMException("Parameter \"pointer\" is null or empty");
 		if (!pointer.getType().isPointerType())
@@ -74,7 +74,7 @@ public class LLVMStoreInst  implements ILLVMBaseInst {
 		// "i32 3"
 		sb.append(value.getType().getTypeDefinitionString());
 		sb.append(' ');
-		sb.append(value.getValue());
+		sb.append(value.getIdentifierOrValue());
 
 		// ", i32* %p0"
 		sb.append(", ");

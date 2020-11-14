@@ -14,7 +14,6 @@ public class LLVMDataValue
 	private ILLVMMemoryType type;
 	// Holds value (integer, float or constructor for arrays/vectors/structs)
 	private String value;
-	// This means that only the value is used.
 	private boolean isConstant;
 	
 	public static LLVMDataValue create(String identifier, ILLVMMemoryType type) throws LLVMException
@@ -34,7 +33,7 @@ public class LLVMDataValue
 	
 	public static LLVMDataValue createConstant(ILLVMMemoryType type, String value) throws LLVMException 
 	{
-		return new LLVMDataValue(null, type, value, false);
+		return new LLVMDataValue(null, type, value, true);
 	}
 	
 	
@@ -46,14 +45,13 @@ public class LLVMDataValue
 	 */
 	public LLVMDataValue(String identifier, ILLVMMemoryType type, String value, boolean isConstant) throws LLVMException
 	{
-		//if (identifier == null)
-		//	throw new LLVMException("Parameter \"identifier\" is null or empty.");
+		if (identifier != null)
+			setIdentifier(identifier);
 		if (type == null)
 			throw new LLVMException("Parameter \"type\" is null or empty.");
 		if (type.isPointerType())
 			throw new LLVMException("A pointer type can't be held inside a value data type.");
 		
-		setIdentifier(identifier);
 		
 		this.type = type;
 		this.value = value;

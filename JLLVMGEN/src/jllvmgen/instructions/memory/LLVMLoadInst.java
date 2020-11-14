@@ -33,7 +33,7 @@ public class LLVMLoadInst  implements ILLVMBaseInst
 		function.registerInst(this);
 	}
 	
-	private LLVMDataValue getResult()
+	public LLVMDataValue getResult()
 	{
 		return result;
 	}
