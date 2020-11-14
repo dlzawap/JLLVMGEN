@@ -8,6 +8,11 @@ import jllvmgen.misc.LLVMException;
 import jllvmgen.types.LLVMValueType;
 import jllvmgen.types.LLVMVectorType;
 
+
+/**
+ * The ‘fadd’ instruction returns the sum of its two operands.
+ * The two arguments to the ‘fadd’ instruction must be floating-point or vector of floating-point values. Both arguments must have identical types.
+ */
 public class LLVMFAddInst implements ILLVMBaseInst
 {
 	private LLVMDataValue result;

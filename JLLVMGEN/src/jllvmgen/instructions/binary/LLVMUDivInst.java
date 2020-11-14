@@ -8,6 +8,9 @@ import jllvmgen.misc.LLVMException;
 import jllvmgen.types.LLVMValueType;
 import jllvmgen.types.LLVMVectorType;
 
+/**
+ * The two arguments to the ‘sdiv’ instruction must be integer or vector of integer values. Both arguments must have identical types.
+ */
 public class LLVMUDivInst implements ILLVMBaseInst
 {
 	private LLVMDataValue result;

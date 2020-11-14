@@ -55,10 +55,7 @@ public class EasyFunctionTest {
 			
 			LLVMAllocaInst.create(
 					fn,
-					LLVMDataPointer.create(
-						fn.getNextFreeLocalPointerValueName(),
-						LLVMPointerType.createf32()
-					)
+					LLVMPointerType.createf32()
 			);
 			
 			

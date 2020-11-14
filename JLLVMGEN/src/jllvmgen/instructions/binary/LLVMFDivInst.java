@@ -8,6 +8,10 @@ import jllvmgen.misc.LLVMException;
 import jllvmgen.types.LLVMValueType;
 import jllvmgen.types.LLVMVectorType;
 
+/**
+ * The ‘fdiv’ instruction returns the quotient of its two operands.
+ * The two arguments to the ‘fdiv’ instruction must be floating-point or vector of floating-point values. Both arguments must have identical types.
+ */
 public class LLVMFDivInst implements ILLVMBaseInst
 {
 	private LLVMDataValue result;

@@ -6,9 +6,9 @@ import jllvmgen.instructions.ILLVMBaseInst;
 import jllvmgen.misc.KeyValueList;
 import jllvmgen.misc.LLVMException;
 import jllvmgen.types.ILLVMMemoryType;
+import jllvmgen.types.LLVMPointerType;
 
 /**
- * @author Manuel
  * Allocates memory on the stack frame of the currently executing function,
  * to be automatically released when this function returns to its caller.
  * %ptr = alloca i32, i32 4, align 1024
@@ -16,60 +16,65 @@ import jllvmgen.types.ILLVMMemoryType;
 public class LLVMAllocaInst implements ILLVMBaseInst
 {
 	private LLVMDataPointer result;
-	private ILLVMMemoryType type;
 	private KeyValueList<ILLVMMemoryType, Integer> subTypes;
 	private Integer align;
 	
-	public static LLVMAllocaInst create(LLVMFunction fn, LLVMDataPointer result) throws LLVMException
+	public static LLVMAllocaInst create(LLVMFunction fn, LLVMPointerType resultType) throws LLVMException
 	{
-		return new LLVMAllocaInst(fn, result, null, null);
+		return new LLVMAllocaInst(fn, resultType, null, null);
 	}
 	
-	public static LLVMAllocaInst create(LLVMFunction fn, LLVMDataPointer result,
+	public static LLVMAllocaInst create(LLVMFunction fn, LLVMPointerType resultType,
 			Integer align) throws LLVMException
 	{
-		return new LLVMAllocaInst(fn, result, null, align);
+		return new LLVMAllocaInst(fn, resultType, null, align);
 	}
 	
-	public static LLVMAllocaInst create(LLVMFunction fn, LLVMDataPointer result,
+	public static LLVMAllocaInst create(LLVMFunction fn, LLVMPointerType resultType,
 			KeyValueList<ILLVMMemoryType, Integer> subTypes) throws LLVMException
 	{
-		return new LLVMAllocaInst(fn, result, subTypes, null);
+		return new LLVMAllocaInst(fn, resultType, subTypes, null);
 	}
 	
-	public static LLVMAllocaInst create(LLVMFunction fn, LLVMDataPointer result, 
+	public static LLVMAllocaInst create(LLVMFunction fn, LLVMPointerType resultType, 
 			KeyValueList<ILLVMMemoryType, Integer> subTypes, Integer align) throws LLVMException
 	{
-		return new LLVMAllocaInst(fn, result, subTypes, align);
+		return new LLVMAllocaInst(fn, resultType, subTypes, align);
 	}
 	
 	
-	public LLVMAllocaInst(LLVMFunction fn, LLVMDataPointer result,
+	public LLVMAllocaInst(LLVMFunction fn, LLVMPointerType resultType,
 			KeyValueList<ILLVMMemoryType, Integer> subTypes, Integer align) throws LLVMException
 	{
 		if (fn == null)
 			throw new LLVMException("Parameter \"fn\" is null or empty.");
-		if (result == null)
-			throw new LLVMException("Parameter \"result\" is null or empty.");
+		if (resultType == null)
+			throw new LLVMException("Parameter \"resultType\" is null or empty.");
 		if (align != null && align < 1 << 29)
 			throw new LLVMException("Alignment exceeded 1 << 29 size limit. Align: " + align);
 		
-		this.result = result;
-		this.type = result.getType().getBaseType();
 		this.subTypes = subTypes;
 		this.align = align;
 		
+		// Pre-generate result pointer.
+		result = LLVMDataPointer.create(fn.getNextFreeLocalPointerValueName(), resultType);
+		
 		// Register instruction.
-		fn.registerInst(this);
+		if (fn.autoRegisterInstructions())
+			fn.registerInst(this);
 	}
 	
+	public LLVMDataPointer getResult()
+	{
+		return result;
+	}
 	
 	@Override
 	public String getInstructionString() throws LLVMException
 	{
 		StringBuilder sb = new StringBuilder(result.getIdentifier());
 		sb.append(" = alloca ");
-		sb.append(type.getTypeDefinitionString());
+		sb.append(result.getType().getTypeDefinitionString());
 		
 		// Append defined sub types.
 		if (subTypes != null)

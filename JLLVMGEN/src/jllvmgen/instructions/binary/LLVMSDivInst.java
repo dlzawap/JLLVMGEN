@@ -7,6 +7,11 @@ import jllvmgen.misc.LLVMException;
 import jllvmgen.types.LLVMValueType;
 import jllvmgen.types.LLVMVectorType;
 
+
+/**
+ * The ‘sdiv’ instruction returns the quotient of its two operands.
+ * Division by zero is undefined behavior. For vectors, if any element of the divisor is zero, the operation has undefined behavior. Overflow also leads to undefined behavior; this is a rare case, but can occur, for example, by doing a 32-bit division of -2147483648 by -1.
+ */
 public class LLVMSDivInst implements ILLVMBaseInst
 {
 	private LLVMDataValue result;

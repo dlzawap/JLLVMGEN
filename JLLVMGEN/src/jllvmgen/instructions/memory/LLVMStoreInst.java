@@ -5,10 +5,9 @@ import jllvmgen.LLVMDataPointer;
 import jllvmgen.LLVMDataValue;
 import jllvmgen.instructions.ILLVMBaseInst;
 import jllvmgen.misc.LLVMException;
+import jllvmgen.types.LLVMValueType;
 
-//TODO: Rework cast-check
 /**
- * @author Manuel
  * The 'store' instruction is used to write to memory. (via pointer)
  */
 public class LLVMStoreInst  implements ILLVMBaseInst {
@@ -19,14 +18,14 @@ public class LLVMStoreInst  implements ILLVMBaseInst {
 	private Integer align;
 	
 	
-	public static LLVMStoreInst createInst(LLVMFunction function, LLVMDataValue value, LLVMDataPointer pointer) throws LLVMException
+	public static LLVMStoreInst createInst(LLVMFunction fn, LLVMDataValue value, LLVMDataPointer pointer) throws LLVMException
 	{
-		return new LLVMStoreInst(function, value, pointer, null);
+		return new LLVMStoreInst(fn, value, pointer, null);
 	}
 	
-	public static LLVMStoreInst createInst(LLVMFunction function, LLVMDataValue value, LLVMDataPointer pointer, int align) throws LLVMException
+	public static LLVMStoreInst createInst(LLVMFunction fn, LLVMDataValue value, LLVMDataPointer pointer, int align) throws LLVMException
 	{
-		return new LLVMStoreInst(function, value, pointer, align);
+		return new LLVMStoreInst(fn, value, pointer, align);
 	}
 	
 	/**
@@ -35,11 +34,13 @@ public class LLVMStoreInst  implements ILLVMBaseInst {
 	 * @param align can be null, if not its value should be below 1 << 29 and above 1
 	 * @throws LLVMException
 	 */
-	private LLVMStoreInst(LLVMFunction function, LLVMDataValue value, LLVMDataPointer pointer, Integer align) throws LLVMException
+	private LLVMStoreInst(LLVMFunction fn, LLVMDataValue value, LLVMDataPointer pointer, Integer align) throws LLVMException
 	{
+		if (fn == null)
+			throw new LLVMException("Parameter \"fn\" is null or empty.");
 		if (value == null)
 			throw new LLVMException("Parameter \"value\" is null or empty.");
-		if (!value.getType().isValueType()) // check if primitive type // rework
+		if (!value.getType().isValueType() && ((LLVMValueType)value.getType()).isPrimitiveType())
 			throw new LLVMException("Store instruction are only allowed on primitive types");
 		if (value.getValue() == null)
 			throw new LLVMException("Value is null or not defined.");
@@ -59,7 +60,8 @@ public class LLVMStoreInst  implements ILLVMBaseInst {
 		this.align = align;
 		
 		// Register instruction
-		function.registerInst(this);
+		if (fn.autoRegisterInstructions())
+			fn.registerInst(this);
 	}
 	
 	/**

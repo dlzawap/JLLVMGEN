@@ -7,6 +7,10 @@ import jllvmgen.misc.LLVMException;
 import jllvmgen.types.LLVMValueType;
 import jllvmgen.types.LLVMVectorType;
 
+
+/**
+ * The ‘srem’ instruction returns the remainder from the signed division of its two operands. This instruction can also take vector versions of the values in which case the elements must be integers.
+ */
 public class LLVMSRemInst implements ILLVMBaseInst
 {
 	private LLVMDataValue result;

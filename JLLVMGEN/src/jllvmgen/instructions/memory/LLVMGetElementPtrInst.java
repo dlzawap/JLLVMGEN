@@ -13,19 +13,19 @@ public class LLVMGetElementPtrInst  implements ILLVMBaseInst
 	private LLVMDataPointer pointer;
 	private int[] indexes;
 	
-	public static LLVMGetElementPtrInst createInst(LLVMFunction function, LLVMDataPointer pointer, int index) throws LLVMException
+	public static LLVMGetElementPtrInst createInst(LLVMFunction fn, LLVMDataPointer pointer, int index) throws LLVMException
 	{
-		return new LLVMGetElementPtrInst(function, pointer, new int[] { index });
+		return new LLVMGetElementPtrInst(fn, pointer, new int[] { index });
 	}
 	
-	public static LLVMGetElementPtrInst createInst(LLVMFunction function, LLVMDataPointer pointer, int[] indexes) throws LLVMException
+	public static LLVMGetElementPtrInst createInst(LLVMFunction fn, LLVMDataPointer pointer, int[] indexes) throws LLVMException
 	{
-		return new LLVMGetElementPtrInst(function, pointer, indexes);
+		return new LLVMGetElementPtrInst(fn, pointer, indexes);
 	}
 	
-	private LLVMGetElementPtrInst(LLVMFunction function, LLVMDataPointer pointer, int[] indexes) throws LLVMException
+	private LLVMGetElementPtrInst(LLVMFunction fn, LLVMDataPointer pointer, int[] indexes) throws LLVMException
 	{
-		if (function == null)
+		if (fn == null)
 			throw new LLVMException("Parameter \"function\" is null or empty.");
 		if (pointer == null)
 			throw new LLVMException("Parameter \"pointer\" is null or empty.");
@@ -39,10 +39,11 @@ public class LLVMGetElementPtrInst  implements ILLVMBaseInst
 		type = pointer.getType().getBaseType();
 		
 		// Pre-generate result pointer.
-		result = LLVMDataPointer.create(function.getNextFreeLocalPointerValueName(), type);
+		result = LLVMDataPointer.create(fn.getNextFreeLocalPointerValueName(), type);
 		
 		// Register instruction.
-		function.registerInst(this);
+		if (fn.autoRegisterInstructions())
+			fn.registerInst(this);
 	}
 	
 	public LLVMDataPointer getResultPointer()
