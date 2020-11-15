@@ -19,45 +19,47 @@ public class LLVMAllocaInst implements ILLVMBaseInst
 	private KeyValueList<ILLVMMemoryType, Integer> subTypes;
 	private Integer align;
 	
-	public static LLVMAllocaInst create(LLVMFunction fn, LLVMPointerType resultType) throws LLVMException
+	public static LLVMAllocaInst create(LLVMFunction fn, String identifier, LLVMPointerType resultType) throws LLVMException
 	{
-		return new LLVMAllocaInst(fn, resultType, null, null);
+		return new LLVMAllocaInst(fn, identifier, resultType, null, null);
 	}
 	
-	public static LLVMAllocaInst create(LLVMFunction fn, LLVMPointerType resultType,
+	public static LLVMAllocaInst create(LLVMFunction fn, String identifier, LLVMPointerType resultType,
 			Integer align) throws LLVMException
 	{
-		return new LLVMAllocaInst(fn, resultType, null, align);
+		return new LLVMAllocaInst(fn, identifier, resultType, null, align);
 	}
 	
-	public static LLVMAllocaInst create(LLVMFunction fn, LLVMPointerType resultType,
+	public static LLVMAllocaInst create(LLVMFunction fn, String identifier, LLVMPointerType resultType,
 			KeyValueList<ILLVMMemoryType, Integer> subTypes) throws LLVMException
 	{
-		return new LLVMAllocaInst(fn, resultType, subTypes, null);
+		return new LLVMAllocaInst(fn, identifier, resultType, subTypes, null);
 	}
 	
-	public static LLVMAllocaInst create(LLVMFunction fn, LLVMPointerType resultType, 
+	public static LLVMAllocaInst create(LLVMFunction fn, String identifier, LLVMPointerType resultType, 
 			KeyValueList<ILLVMMemoryType, Integer> subTypes, Integer align) throws LLVMException
 	{
-		return new LLVMAllocaInst(fn, resultType, subTypes, align);
+		return new LLVMAllocaInst(fn, identifier, resultType, subTypes, align);
 	}
 	
 	
-	public LLVMAllocaInst(LLVMFunction fn, LLVMPointerType resultType,
+	public LLVMAllocaInst(LLVMFunction fn, String identifier, LLVMPointerType resultType,
 			KeyValueList<ILLVMMemoryType, Integer> subTypes, Integer align) throws LLVMException
 	{
 		if (fn == null)
 			throw new LLVMException("Parameter \"fn\" is null or empty.");
+		if (identifier == null)
+			throw new LLVMException("Parameter\"identifier\" is null or empty.");
 		if (resultType == null)
 			throw new LLVMException("Parameter \"resultType\" is null or empty.");
-		if (align != null && align < 1 << 29)
+		if (align != null && align > 1 << 29)
 			throw new LLVMException("Alignment exceeded 1 << 29 size limit. Align: " + align);
 		
 		this.subTypes = subTypes;
 		this.align = align;
 		
 		// Pre-generate result pointer.
-		result = LLVMDataPointer.create(fn.getNextFreeLocalPointerValueName(), resultType);
+		result = LLVMDataPointer.create(identifier, resultType);
 		
 		// Register instruction.
 		if (fn.autoRegisterInstructions())
