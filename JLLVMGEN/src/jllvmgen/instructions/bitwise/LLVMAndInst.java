@@ -1,4 +1,4 @@
-package jllvmgen.instructions.binary;
+package jllvmgen.instructions.bitwise;
 
 import jllvmgen.LLVMDataValue;
 import jllvmgen.LLVMFunction;
@@ -7,17 +7,18 @@ import jllvmgen.misc.LLVMException;
 import jllvmgen.types.LLVMValueType;
 import jllvmgen.types.LLVMVectorType;
 
-/**
- * The two arguments to the ‘sdiv’ instruction must be integer or vector of integer values. Both arguments must have identical types.
- */
-public class LLVMUDivInst implements ILLVMBaseInst
+public class LLVMAndInst implements ILLVMBaseInst
 {
 	private LLVMDataValue result;
 	private LLVMDataValue op1;
 	private LLVMDataValue op2;
-	private boolean isExact;
 	
-	public LLVMUDivInst(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2, boolean isExact) throws LLVMException
+	public static LLVMAndInst create(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2) throws LLVMException
+	{
+		return new LLVMAndInst(fn, op1, op2);
+	}
+	
+	public LLVMAndInst(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2) throws LLVMException
 	{
 		if (fn == null)
 			throw new LLVMException("Parameter \"fn\" is null or empty.");
@@ -30,27 +31,27 @@ public class LLVMUDivInst implements ILLVMBaseInst
 					+ "Op1: " + op1.getType().getTypeDefinitionString() + " "
 					+ "Op2: " + op2.getType().getTypeDefinitionString());
 		
-		// Check if both operands are value or vector types with an floating-point base type.
+		// Check if both operands are value or vector types with an integer base type.
 		if (op1.getType().isValueType())
 		{
 			LLVMValueType temp = (LLVMValueType)op1.getType();
-			if (!temp.holdsUnsignedInteger())
-				throw new LLVMException("Operands must be values from with unsigned integer type.");
+			if (!temp.holdsInteger())
+				throw new LLVMException("Operands must be from integers.");
 		}
 		else if (op2.getType().isVectorType())
 		{
 			if (((LLVMVectorType)op1.getType()).getBaseType().isValueType())
 			{
 				LLVMValueType temp = (LLVMValueType)((LLVMVectorType)op1.getType()).getBaseType();
-				if (!temp.holdsUnsignedInteger())
-					throw new LLVMException("Operands must be vectors of unsigned integer values.");
+				if (!temp.holdsInteger())
+					throw new LLVMException("Operands must be vectors of integer values.");
 			}
-			else throw new LLVMException("Operands base types are not unsigned integer types.");
+			else throw new LLVMException("Operands base types are not value types.");
 		}
 		
 		this.op1 = op1;
 		this.op2 = op2;
-		this.isExact = isExact;
+		
 		
 		// Pre-generate value.
 		result = LLVMDataValue.create(fn.getNextFreeLocalVariableValueName(), op1.getType());
@@ -70,10 +71,7 @@ public class LLVMUDivInst implements ILLVMBaseInst
 	{
 		StringBuilder sb = new StringBuilder(result.getIdentifier());
 		
-		sb.append(" = udiv ");
-		
-		if (isExact)
-			sb.append("exact ");
+		sb.append(" = and ");
 		
 		sb.append(result.getType().getTypeDefinitionString());
 		sb.append(' ');

@@ -4,4 +4,4 @@
 
 Quick overview of the LLVM IR type system:
 
-![](Media/TypesOverview.png)
+![](Media/TypeOverview.png)
