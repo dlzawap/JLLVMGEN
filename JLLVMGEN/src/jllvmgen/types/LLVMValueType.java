@@ -82,11 +82,6 @@ public class LLVMValueType extends LLVMBaseDataType implements ILLVMMemoryType
 		return new LLVMValueType(LLVMPrimitiveType.createBool());
 	}
 	
-	public static LLVMValueType createChar()
-	{
-		return new LLVMValueType(LLVMPrimitiveType.createChar());
-	}
-	
 	public static LLVMValueType createFromStruct(LLVMBaseStruct struct)
 	{
 		return new LLVMValueType(struct);

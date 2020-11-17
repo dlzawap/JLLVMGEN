@@ -8,7 +8,7 @@ import jllvmgen.types.ILLVMMemoryType;
  */
 public class LLVMDataValue
 {
-	// Holds identifier without %-prefix.
+	// Holds identifier without %(@ for constant)-prefix.
 	private String identifier;
 	// Holds data value type. (Primitive type, struct, vector, array)
 	private ILLVMMemoryType type;
@@ -56,6 +56,7 @@ public class LLVMDataValue
 		this.type = type;
 		this.value = value;
 		this.isConstant = isConstant;
+
 	}
 	
 	public String getIdentifierOrValue()
@@ -73,6 +74,9 @@ public class LLVMDataValue
 	
 	public String getIdentifier()
 	{
+		if (isConstant)
+			return "@" + identifier;
+		
 		return "%" + identifier;
 	}
 	

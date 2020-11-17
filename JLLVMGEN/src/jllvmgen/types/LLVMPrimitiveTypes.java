@@ -18,8 +18,7 @@ public enum LLVMPrimitiveTypes
 	_u256,
 	_f32,
 	_f64,
-	_bool,
-	_char;
+	_bool;
 	
 	public String print(LLVMPrimitiveTypes type) throws LLVMException
 	{
@@ -54,8 +53,6 @@ public enum LLVMPrimitiveTypes
 			case _f64:
 				return "double";
 			case _bool:
-				return "i1";
-			case _char:
 				return "i1";
 			default:
 				throw new LLVMException("Unknown primitive type. Type: " + type.toString());

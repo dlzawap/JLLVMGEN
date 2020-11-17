@@ -2,7 +2,8 @@ package jllvmgen.types;
 
 import jllvmgen.misc.LLVMException;
 
-public interface ILLVMMemoryType {
+public interface ILLVMMemoryType
+{
 	public boolean isValueType();
 	public boolean isArrayType();
 	public boolean isPointerType();

@@ -44,8 +44,10 @@ public class Main {
 			// Tuple
 			// LLVMLiteralStruct literalStruct = LLVMLiteralStruct.
 
-			LLVMFunction fn = LLVMFunction.createWithoutParameters("foo", LLVMVoidType.createVoid());
+			LLVMModule module = LLVMModule.create("hello.bol");
+			LLVMFunction fn = LLVMFunction.createWithoutParameters(module, "foo", LLVMVoidType.createVoid());
 
+			
 			// LLVMAllocaInst.create(
 			// fn,
 			// LLVMPointer.create(
@@ -88,10 +90,11 @@ public class Main {
 
 			fn.printDefinition();
 
-			LLVMModule module = LLVMModule.create("hello.bol");
-			module.registerFn(fn);
 
-			System.out.println(module.foo());
+			//System.out.println(module.foo());
+			
+			module.writeCodeToFile("/tmp/hello.ll");
+			
 
 			LLVMDataValue t1 = LLVMDataValue.create("s1", LLVMValueType.createf32());
 			LLVMDataValue t2 = LLVMDataValue.create("s2", LLVMValueType.createf32());

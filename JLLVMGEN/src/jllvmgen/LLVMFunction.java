@@ -8,25 +8,30 @@ import jllvmgen.misc.KeyValueList;
 import jllvmgen.misc.LLVMException;
 import jllvmgen.types.ILLVMMemoryType;
 
-public class LLVMFunction {
+public class LLVMFunction
+{
+	private LLVMModule module;
+	
 	private String name;
 	private ILLVMMemoryType returnType;
 	private KeyValueList<ILLVMMemoryType, String> parameters;
 	private ArrayList<ILLVMBaseInst> instructions = new ArrayList<ILLVMBaseInst>();
 	private LLVMRuntimePreemptionSpecifiers runtimePreemptionSpecifier;
 	
+	
+	
 	private int numberOfDefinedValueVars = 0;
 	private int numberOfDefinedPointerVars = 0;
 	
 	
-	public static LLVMFunction createWithoutParameters(String name, ILLVMMemoryType returnType)
+	public static LLVMFunction createWithoutParameters(LLVMModule module, String name, ILLVMMemoryType returnType) throws LLVMException
 	{
-		return new LLVMFunction(name, returnType, null);
+		return new LLVMFunction(module, name, returnType, null);
 	}
 	
-	public static LLVMFunction createWithParameters(String name, ILLVMMemoryType returnType, KeyValueList<ILLVMMemoryType, String> parameters)
+	public static LLVMFunction createWithParameters(LLVMModule module, String name, ILLVMMemoryType returnType, KeyValueList<ILLVMMemoryType, String> parameters) throws LLVMException
 	{
-		return new LLVMFunction(name, returnType, parameters);
+		return new LLVMFunction(module, name, returnType, parameters);
 	}
 	
 //	public static LLVMFunction createVoidWithoutParameters(String name)
@@ -39,32 +44,50 @@ public class LLVMFunction {
 //		return new LLVMFunction(name, new LLVMPrimitiveType(LLVMPrimitiveTypes._void), parameters);
 //	}
 	
-	private LLVMFunction(String name, ILLVMMemoryType returnType, KeyValueList<ILLVMMemoryType, String> parameters)
+	private LLVMFunction(LLVMModule module, String name, ILLVMMemoryType returnType, KeyValueList<ILLVMMemoryType, String> parameters) throws LLVMException
 	{
+		if (module == null)
+			throw new LLVMException("Parameter \"module\" is null or empty.");
+		if (name == null)
+			throw new LLVMException("Parameter \"name\" is null or empty.");
+		if (returnType == null)
+			throw new LLVMException("Parameter \"returnType\" is null or empty.");
+		
+		this.module = module;
 		this.name = name;
 		this.returnType = returnType;
 		this.parameters = parameters;
+		
+		if (module.autoRegisterFunctions())
+			module.registerFunction(this);
 	}
 	
 	/**
-	 * @return Next free local variable name without %-prefix.
+	 * @return next free local variable name without %-prefix.
 	 */
 	public String getNextFreeLocalVariableValueName()
 	{
 		return "v" + (numberOfDefinedValueVars++);
 	}
+	
+	/**
+	 * @return next free local pointer variable name without %-prefix.
+	 */
 	public String getNextFreeLocalPointerValueName()
 	{
 		return "p" + (numberOfDefinedPointerVars++);
 	}
 	
+	public boolean autoRegisterInstructions()
+	{
+		return module.autoRegisterInstructions();
+	}
 	
+	public boolean autoRegisterGlobalVars()
+	{
+		return module.autoRegisterGlobalVars();
+	}
 	
-	/**
-	 * Don't use this function manually.
-	 * @param instruction
-	 * @throws LLVMException
-	 */
 	public void registerInst(ILLVMBaseInst instruction) throws LLVMException
 	{
 		if (instruction == null)
@@ -73,8 +96,17 @@ public class LLVMFunction {
 		instructions.add(instruction);
 	}
 	
+	public void registerGlobalVar(ILLVMMemoryType variable) throws LLVMException
+	{
+		if (variable == null)
+			throw new LLVMException("Parameter \"variable\" is null or empty.");
+		
+		//instructions.add(variable);
+	}
 	
-	public void printDefinition() throws LLVMException {
+	
+	public void printDefinition() throws LLVMException
+	{
 		System.out.println(getDefinitionString());
 	}
 	
@@ -97,12 +129,5 @@ public class LLVMFunction {
 		sb.append("}");
 		
 		return sb.toString();
-	}
-	
-	
-	public boolean autoRegisterInstructions()
-	{
-		// save value in llvm module.
-		return true;
 	}
 }

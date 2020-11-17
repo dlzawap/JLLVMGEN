@@ -81,11 +81,6 @@ public class LLVMPrimitiveType implements ILLVMCodeCreationFunctionality
 		return new LLVMPrimitiveType(LLVMPrimitiveTypes._bool);
 	}
 	
-	public static LLVMPrimitiveType createChar()
-	{
-		return new LLVMPrimitiveType(LLVMPrimitiveTypes._char);
-	}
-	
 	public LLVMPrimitiveType(LLVMPrimitiveTypes type)
 	{
 		this.type = type;	

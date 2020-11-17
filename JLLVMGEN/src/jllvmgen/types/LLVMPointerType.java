@@ -86,11 +86,6 @@ public class LLVMPointerType implements ILLVMMemoryType
 		return LLVMPointerType.create((ILLVMMemoryType)LLVMValueType.createBool());
 	}
 	
-	public static LLVMPointerType createChar() throws LLVMException
-	{
-		return LLVMPointerType.create((ILLVMMemoryType)LLVMValueType.createChar());
-	}
-	
 	public static LLVMPointerType createFromStruct(LLVMBaseStruct struct) throws LLVMException
 	{
 		return LLVMPointerType.create((ILLVMMemoryType)new LLVMValueType(struct));

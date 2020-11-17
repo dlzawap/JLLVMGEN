@@ -7,7 +7,6 @@ module jllvmgen {
 	exports jllvmgen.instructions.terminator;
 	exports jllvmgen.instructions;
 	exports jllvmgen.instructions.binary;
-	exports jllvmgen.test;
 	exports jllvmgen.types;
 	exports jllvmgen.enums;
 }
