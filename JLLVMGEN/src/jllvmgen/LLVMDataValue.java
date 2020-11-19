@@ -6,44 +6,75 @@ import jllvmgen.types.ILLVMMemoryType;
 /**
  * Holds a value data type and suitable value.
  */
-public class LLVMDataValue
+public class LLVMDataValue implements ILLVMVariableType
 {
+	public enum ValueVariableTypes
+	{
+		local,
+		constant,
+		value_only;
+	}
+	
 	// Holds identifier without %(@ for constant)-prefix.
 	private String identifier;
 	// Holds data value type. (Primitive type, struct, vector, array)
-	private ILLVMMemoryType type;
+	private final ILLVMMemoryType type;
 	// Holds value (integer, float or constructor for arrays/vectors/structs)
 	private String value;
-	private boolean isConstant;
 	
-	public static LLVMDataValue create(String identifier, ILLVMMemoryType type) throws LLVMException
+	private final ValueVariableTypes variableType;
+	
+	
+	public static LLVMDataValue create(
+			LLVMFunction fn,
+			String identifier,
+			ILLVMMemoryType type,
+			String value,
+			ValueVariableTypes variableType) throws LLVMException
 	{
-		return new LLVMDataValue(identifier, type, null, false);
+		return new LLVMDataValue(fn, identifier, type, value, variableType);
 	}
 	
-	public static LLVMDataValue create(String identifier, ILLVMMemoryType type, String value) throws LLVMException 
+	// Without value
+	public static LLVMDataValue createLocalVariable(
+			String identifier,
+			ILLVMMemoryType type) throws LLVMException
 	{
-		return new LLVMDataValue(identifier, type, value, false);
+		return new LLVMDataValue(null, identifier, type, null, ValueVariableTypes.local);
 	}
 	
-	public static LLVMDataValue create(String identifier, ILLVMMemoryType type, String value, boolean isConstant) throws LLVMException 
+	// With value
+	public static LLVMDataValue createLocalVariable(
+			String identifier,
+			ILLVMMemoryType type,
+			String value) throws LLVMException
 	{
-		return new LLVMDataValue(identifier, type, value, isConstant);
+		return new LLVMDataValue(null, identifier, type, value, ValueVariableTypes.local);
 	}
 	
-	public static LLVMDataValue createConstant(ILLVMMemoryType type, String value) throws LLVMException 
+	public static LLVMDataValue createConstant(
+			LLVMFunction fn,
+			String identifier,
+			ILLVMMemoryType type,
+			String value) throws LLVMException
 	{
-		return new LLVMDataValue(null, type, value, true);
+		return new LLVMDataValue(fn, identifier, type, value, ValueVariableTypes.constant);
 	}
 	
+	public static LLVMDataValue createValueOnly(
+			String identifier,
+			ILLVMMemoryType type,
+			String value) throws LLVMException
+	{
+		return new LLVMDataValue(null, identifier, type, value, ValueVariableTypes.value_only);
+	}
 	
-	/**
-	 * @param identifier without %-prefix.
-	 * @param type must not be a pointer.
-	 * @param value can be null.
-	 * @throws LLVMException
-	 */
-	public LLVMDataValue(String identifier, ILLVMMemoryType type, String value, boolean isConstant) throws LLVMException
+	public LLVMDataValue(
+			LLVMFunction fn,
+			String identifier,
+			ILLVMMemoryType type,
+			String value,
+			ValueVariableTypes variableType) throws LLVMException
 	{
 		if (identifier != null)
 			setIdentifier(identifier);
@@ -55,41 +86,26 @@ public class LLVMDataValue
 		
 		this.type = type;
 		this.value = value;
-		this.isConstant = isConstant;
+		this.variableType = variableType;
 
+		// Only constant types need to be registered on the module through the function.
+		if (isConstant())
+		{
+			if (fn == null)
+				throw new LLVMException("Parameter \"fn\" is null or empty."
+						+ "Empty function parameter is only on value-only types and local variables allowed.");
+			
+			
+			fn.registerConstant(this);
+		}
 	}
 	
 	public String getIdentifierOrValue()
 	{
-		if (isConstant)
+		if (variableType == ValueVariableTypes.value_only)
 			return value;
 		
 		return getIdentifier();
-	}
-	
-	public String getIdentifierWithoutPrefix()
-	{
-		return identifier;
-	}
-	
-	public String getIdentifier()
-	{
-		if (isConstant)
-			return "@" + identifier;
-		
-		return "%" + identifier;
-	}
-	
-	public void setIdentifier(String identifier) throws LLVMException
-	{
-		if (identifier == null)
-			throw new LLVMException("Parameter \"identifier\" is null or empty.");
-		
-		// Check if identifier already contains %-prefix and if available remove it.
-		if (identifier.startsWith("%"))
-			identifier = identifier.substring(1);
-		
-		this.identifier = identifier;
 	}
 	
 	public String getValue()
@@ -97,8 +113,69 @@ public class LLVMDataValue
 		return value;
 	}
 	
+	@Override
+	public String getIdentifier()
+	{
+		if (isConstant())
+			return "@" + identifier;
+		
+		return "%" + identifier;
+	}
+	
+	@Override
+	public String getIdentifierWithoutPrefix()
+	{
+		return identifier;
+	}
+
+	@Override
+	public void setIdentifier(String identifier) throws LLVMException
+	{
+		if (identifier == null)
+			throw new LLVMException("Parameter \"identifier\" is null or empty.");
+		
+		// Check if identifier already contains %/@-prefix and if available remove it.
+		if (identifier.startsWith("%"))
+			identifier = identifier.substring(1);
+		if (identifier.startsWith("@"))
+			identifier = identifier.substring(1);
+		
+		this.identifier = identifier;
+	}
+
+	@Override
 	public ILLVMMemoryType getType()
 	{
 		return type;
+	}
+
+	@Override
+	public boolean isLocalVariable()
+	{
+		return variableType == ValueVariableTypes.local;
+	}
+
+	@Override
+	public boolean isGlobalVariable()
+	{
+		return false;
+	}
+	
+	@Override
+	public boolean isConstant()
+	{
+		return variableType == ValueVariableTypes.constant;
+	}
+
+	@Override
+	public boolean isPointerVariable()
+	{
+		return false;
+	}
+
+	@Override
+	public boolean isValueVariable()
+	{
+		return true;
 	}
 }

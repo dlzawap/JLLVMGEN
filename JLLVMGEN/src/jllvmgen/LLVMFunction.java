@@ -96,12 +96,14 @@ public class LLVMFunction
 		instructions.add(instruction);
 	}
 	
-	public void registerGlobalVar(ILLVMMemoryType variable) throws LLVMException
+	public void registerGlobalVariable(LLVMDataPointer variable) throws LLVMException
 	{
-		if (variable == null)
-			throw new LLVMException("Parameter \"variable\" is null or empty.");
-		
-		//instructions.add(variable);
+		module.registerGlobalVariable(variable);
+	}
+	
+	public void registerConstant(LLVMDataValue constant) throws LLVMException
+	{
+		module.registerConstant(constant);
 	}
 	
 	

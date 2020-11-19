@@ -4,45 +4,135 @@ import jllvmgen.misc.LLVMException;
 import jllvmgen.types.ILLVMMemoryType;
 import jllvmgen.types.LLVMPointerType;
 
-public class LLVMDataPointer
+public class LLVMDataPointer implements ILLVMVariableType
 {
+	// Holds identifier without %-prefix.
 	private String identifier;
-	private LLVMPointerType type;
+	// Holds data value type. (pointer to: primitive type, struct, vector, array)
+	private final LLVMPointerType type;
+	private final PointerVariableTypes variableType;
 	
-	
-	public static LLVMDataPointer create(String name, LLVMPointerType type) throws LLVMException
+	public enum PointerVariableTypes
 	{
-		return new LLVMDataPointer(name, type);
+		local,
+		global
 	}
 	
-	public static LLVMDataPointer create(String name, ILLVMMemoryType type) throws LLVMException
+	public static LLVMDataPointer create(
+			LLVMFunction fn,
+			String identifier,
+			ILLVMMemoryType type,
+			PointerVariableTypes variableType) throws LLVMException
 	{
-		if (type instanceof LLVMPointerType)
-		{
-			return new LLVMDataPointer(name, (LLVMPointerType)type);
-		}
-
-		throw new LLVMException("Parameter \"type\" is not a valid pointer data type.");
+		return new LLVMDataPointer(fn, identifier, type, variableType);
 	}
 	
-	public LLVMDataPointer(String name, LLVMPointerType type) throws LLVMException
+	public static LLVMDataPointer createLocalVariable(
+			String identifier,
+			ILLVMMemoryType type) throws LLVMException
 	{
-		if (name == null)
+		return new LLVMDataPointer(null, identifier, type, PointerVariableTypes.global);
+	}
+	
+	public static LLVMDataPointer createGlobalVariable(
+			LLVMFunction fn,
+			String identifier,
+			ILLVMMemoryType type) throws LLVMException
+	{
+		return new LLVMDataPointer(fn, identifier, type, PointerVariableTypes.global);
+	}
+	
+	public LLVMDataPointer(
+			LLVMFunction fn,
+			String identifier,
+			ILLVMMemoryType type,
+			PointerVariableTypes variableType) throws LLVMException
+	{
+		if (identifier == null)
 			throw new LLVMException("Parameter \"name\" is null or empty.");
 		if (type == null)
 			throw new LLVMException("Parameter \"type\" is null or empty.");
 		
-		this.identifier = name;
-		this.type = type;
+		setIdentifier(identifier);
+		
+		if (!type.isPointerType())
+			throw new LLVMException("A data pointer type can't holds other types."
+					+ "Actual type: " + type.getTypeDefinitionString());
+			
+		this.type = (LLVMPointerType)type;
+		this.variableType = variableType;
+		
+		// Only global variables need to be registered on the module through the function.
+		if (isGlobalVariable())
+		{
+			if (fn == null)
+				throw new LLVMException("Parameter \"fn\" is null or empty."
+						+ "Empty function parameter is only on local pointer variables allowed.");
+			
+			fn.registerConstant(this);
+		}
 	}
-	
+
+	@Override
 	public String getIdentifier()
 	{
 		return "%" + identifier;
 	}
+
+	@Override
+	public String getIdentifierWithoutPrefix()
+	{
+		return identifier;
+	}
 	
-	public LLVMPointerType getType()
+	@Override
+	public void setIdentifier(String identifier) throws LLVMException
+	{
+		if (identifier == null)
+			throw new LLVMException("Parameter \"identifier\" is null or empty.");
+		
+		// Check if identifier already contains %/@-prefix and if available remove it.
+		if (identifier.startsWith("%"))
+			identifier = identifier.substring(1);
+		if (identifier.startsWith("@"))
+			identifier = identifier.substring(1);
+		
+		this.identifier = identifier;
+	}
+
+	@Override
+	public ILLVMMemoryType getType()
 	{
 		return type;
+	}
+
+	@Override
+	public boolean isLocalVariable()
+	{
+		return variableType == PointerVariableTypes.local;
+	}
+
+	@Override
+	public boolean isGlobalVariable()
+	{
+		return variableType == PointerVariableTypes.global;
+	}
+	
+	@Override
+	public boolean isConstant()
+	{
+		return false;
+	}
+
+	@Override
+	public boolean isPointerVariable()
+	{
+		return true;
+	}
+
+	@Override
+	public boolean isValueVariable()
+	{
+		return false;
 	}
 }

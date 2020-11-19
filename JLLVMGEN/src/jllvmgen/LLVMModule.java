@@ -14,9 +14,9 @@ public class LLVMModule
 
 	private String sourceFilename;
 	private ArrayList<LLVMFunction> functions = new ArrayList<LLVMFunction>();
-
-	private ArrayList<LLVMDataValue> globalDataVars;
-	private ArrayList<LLVMPointerType> globalPointerVars;
+	
+	private ArrayList<ILLVMVariableType> constants  = new ArrayList<ILLVMVariableType>();
+	private ArrayList<ILLVMVariableType> globalVariables = new ArrayList<ILLVMVariableType>();
 
 	public static LLVMModule create(String sourceFilename) {
 		return new LLVMModule(sourceFilename);
@@ -30,12 +30,24 @@ public class LLVMModule
 		functions.add(fn);
 	}
 
-	public void registerGlobalVar() throws LLVMException {
-
+	public void registerGlobalVariable(LLVMDataPointer pointer) throws LLVMException
+	{
+		if (pointer == null)
+			throw new LLVMException("Parameter \"pointer\" is null or empty.");
+		if (!pointer.isConstant())
+			throw new LLVMException("Tried to register an invalid global variable.");
+		
+		globalVariables.add(pointer);
 	}
-
-	public void registerConst() throws LLVMException {
-
+	
+	public void registerConstant(LLVMDataValue constant) throws LLVMException
+	{
+		if (constant == null)
+			throw new LLVMException("Parameter \"constant\" is null or empty.");
+		if (!constant.isConstant())
+			throw new LLVMException("Tried to register a non constant value as a constant.");
+		
+		constants.add(constant);
 	}
 	
 	public boolean autoRegisterFunctions()
