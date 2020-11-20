@@ -39,7 +39,7 @@ public class LLVMGetElementPtrInst  implements ILLVMBaseInst
 		type = pointer.getType().getBaseType();
 		
 		// Pre-generate result pointer.
-		result = LLVMDataPointer.create(fn.getNextFreeLocalPointerValueName(), type);
+		result = LLVMDataPointer.createLocalVariable(fn.getNextFreeLocalPointerValueName(), type);
 		
 		// Register instruction.
 		if (fn.autoRegisterInstructions())

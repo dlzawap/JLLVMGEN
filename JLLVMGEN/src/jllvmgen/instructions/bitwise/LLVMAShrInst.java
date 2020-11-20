@@ -76,7 +76,7 @@ public class LLVMAShrInst implements ILLVMBaseInst
 		this.noSignedWrap = noSignedWrap;
 		
 		// Pre-generate value.
-		result = LLVMDataValue.create(fn.getNextFreeLocalVariableValueName(), op1.getType());
+		result = LLVMDataValue.createLocalVariable(fn.getNextFreeLocalVariableValueName(), op1.getType());
 		
 		if (fn.autoRegisterInstructions())
 			fn.registerInst(this);

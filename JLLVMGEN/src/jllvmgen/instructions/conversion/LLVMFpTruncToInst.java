@@ -54,7 +54,7 @@ public class LLVMFpTruncToInst implements ILLVMBaseInst
 			
 			
 		// Pre-generate value.
-		result = LLVMDataValue.create(fn.getNextFreeLocalVariableValueName(), type);
+		result = LLVMDataValue.createLocalVariable(fn.getNextFreeLocalVariableValueName(), type);
 		
 		
 		if (fn.autoRegisterInstructions())

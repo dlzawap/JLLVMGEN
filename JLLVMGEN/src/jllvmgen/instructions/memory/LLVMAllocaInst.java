@@ -2,6 +2,7 @@ package jllvmgen.instructions.memory;
 
 import jllvmgen.LLVMFunction;
 import jllvmgen.LLVMDataPointer;
+import jllvmgen.LLVMDataValue;
 import jllvmgen.instructions.ILLVMBaseInst;
 import jllvmgen.misc.KeyValueList;
 import jllvmgen.misc.LLVMException;
@@ -59,7 +60,7 @@ public class LLVMAllocaInst implements ILLVMBaseInst
 		this.align = align;
 		
 		// Pre-generate result pointer.
-		result = LLVMDataPointer.create(identifier, resultType);
+		result = LLVMDataPointer.createLocalVariable(identifier, resultType);
 		
 		// Register instruction.
 		if (fn.autoRegisterInstructions())
@@ -76,7 +77,7 @@ public class LLVMAllocaInst implements ILLVMBaseInst
 	{
 		StringBuilder sb = new StringBuilder(result.getIdentifier());
 		sb.append(" = alloca ");
-		sb.append(result.getType().getBaseType().getTypeDefinitionString());
+		sb.append(result.getType().getTypeDefinitionString());
 		
 		// Append defined sub types.
 		if (subTypes != null)

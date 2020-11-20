@@ -47,7 +47,7 @@ public class LLVMFnegInst implements ILLVMBaseInst
 		this.fastMathFlags = fastMathFlags;
 		
 		// Pre-generate result type.
-		result = LLVMDataValue.create(fn.getNextFreeLocalVariableValueName(), value.getType());
+		result = LLVMDataValue.createLocalVariable(fn.getNextFreeLocalVariableValueName(), value.getType());
 		
 		// Register instruction.
 		fn.registerInst(this);

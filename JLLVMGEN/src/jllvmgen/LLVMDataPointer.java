@@ -69,7 +69,7 @@ public class LLVMDataPointer implements ILLVMVariableType
 				throw new LLVMException("Parameter \"fn\" is null or empty."
 						+ "Empty function parameter is only on local pointer variables allowed.");
 			
-			fn.registerConstant(this);
+			fn.registerGlobalVariable(this);
 		}
 	}
 
@@ -101,7 +101,7 @@ public class LLVMDataPointer implements ILLVMVariableType
 	}
 
 	@Override
-	public ILLVMMemoryType getType()
+	public LLVMPointerType getType()
 	{
 		return type;
 	}

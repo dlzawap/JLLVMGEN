@@ -27,7 +27,9 @@ public class LLVMLoadInst  implements ILLVMBaseInst
 		
 		// Pre-generate value.
 		// Use base type of pointer type. (i32* -> i32)
-		result = LLVMDataValue.create(function.getNextFreeLocalPointerValueName(), pointer.getType().getBaseType());
+		result = LLVMDataValue.createLocalVariable(
+				function.getNextFreeLocalPointerValueName(),
+				pointer.getType().getBaseType());
 		
 		// Register instruction.
 		function.registerInst(this);

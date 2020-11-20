@@ -51,11 +51,10 @@ public class LLVMZExtToInst implements ILLVMBaseInst
 			// TODO: Implement type size of value types.
 		}
 		else throw new LLVMException("Value type must be an integer value type.");
-			
-			
-		// Pre-generate value.
-		result = LLVMDataValue.create(fn.getNextFreeLocalVariableValueName(), type);
 		
+		
+		// Pre-generate value.
+		result = LLVMDataValue.createLocalVariable(fn.getNextFreeLocalVariableValueName(), type);
 		
 		if (fn.autoRegisterInstructions())
 			fn.registerInst(this);
