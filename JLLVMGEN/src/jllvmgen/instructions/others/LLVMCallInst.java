@@ -22,6 +22,8 @@ import jllvmgen.types.ILLVMMemoryType;
  * HINT:
  * For extern function, function pointers are needed??
  * call i32 (i8*, ...)* @printf(i8* c"sd")
+ * 
+ * It seems like, its possible to retrieve result from a function call with a void as return type.
  */
 
 public class LLVMCallInst implements ILLVMBaseInst
@@ -37,6 +39,19 @@ public class LLVMCallInst implements ILLVMBaseInst
 	private LLVMFastMathFlags[] 	fastMathFlags;
 	private LLVMCallingConvention 	callingConv;
 
+	
+	public static LLVMCallInst create(
+			LLVMFunction fn,
+			ILLVMMemoryType resultType,
+			String calleeFnName,
+			LLVMTailFlags tailFlag,
+			LLVMFastMathFlags[] fastMathFlags,
+			LLVMCallingConvention cc,
+			Integer addrSpace,
+			ArrayList<ILLVMVariableType> arguments) throws LLVMException
+	{
+		return new LLVMCallInst(fn, resultType, calleeFnName, tailFlag, fastMathFlags, cc, addrSpace, arguments);
+	}
 	
 	public LLVMCallInst(
 			LLVMFunction fn,

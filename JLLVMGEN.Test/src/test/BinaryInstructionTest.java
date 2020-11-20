@@ -1,5 +1,7 @@
 package test;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import org.junit.jupiter.api.Test;
 
 import jllvmgen.LLVMDataValue;
@@ -9,6 +11,7 @@ import jllvmgen.instructions.binary.LLVMAddInst;
 import jllvmgen.instructions.memory.LLVMAllocaInst;
 import jllvmgen.instructions.memory.LLVMLoadInst;
 import jllvmgen.instructions.memory.LLVMStoreInst;
+import jllvmgen.instructions.others.LLVMCallInst;
 import jllvmgen.misc.LLVMException;
 import jllvmgen.types.LLVMPointerType;
 import jllvmgen.types.LLVMValueType;
@@ -16,10 +19,11 @@ import jllvmgen.types.LLVMVoidType;
 
 public class BinaryInstructionTest
 {
+	private static LLVMModule module = LLVMModule.create("junittest.java");
+	
     @Test
     public void equalPrimitiveTypes() throws Exception
     {
-    	var module = LLVMModule.create("junittest.java");
     	var fn = LLVMFunction.createWithoutParameters(module, "foo", LLVMVoidType.createVoid());
     	
     	
@@ -50,6 +54,26 @@ public class BinaryInstructionTest
     	catch (LLVMException ex)
     	{
     		ex.printStackTrace();
+    	}
+    }
+    
+    @Test
+    public void fnCallTest() throws Exception
+    {
+    	var fn = LLVMFunction.createWithoutParameters(module, "fnCallTest", LLVMVoidType.createVoid());
+    	
+    	
+    	try
+    	{
+    		LLVMCallInst.create(fn, LLVMVoidType.createVoid(), "calleeFnNameVoid", null, null, null, null, null);
+    		LLVMCallInst.create(fn, LLVMValueType.createi32(), "calleeFn", null, null, null, null, null);
+    		
+    		System.out.println(fn.getDefinitionString());
+    	}
+    	catch (LLVMException ex)
+    	{
+    		ex.printStackTrace();
+    		fail();
     	}
     }
 }
