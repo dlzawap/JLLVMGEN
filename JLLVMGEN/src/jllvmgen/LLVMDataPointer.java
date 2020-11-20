@@ -31,7 +31,7 @@ public class LLVMDataPointer implements ILLVMVariableType
 			String identifier,
 			ILLVMMemoryType type) throws LLVMException
 	{
-		return new LLVMDataPointer(null, identifier, type, PointerVariableTypes.global);
+		return new LLVMDataPointer(null, identifier, type, PointerVariableTypes.local);
 	}
 	
 	public static LLVMDataPointer createGlobalVariable(

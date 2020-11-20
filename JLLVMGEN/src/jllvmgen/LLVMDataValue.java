@@ -94,7 +94,8 @@ public class LLVMDataValue implements ILLVMVariableType
 			if (fn == null)
 				throw new LLVMException("Parameter \"fn\" is null or empty."
 						+ "Empty function parameter is only on value-only types and local variables allowed.");
-			
+			if (value == null)
+				throw new LLVMException("A constant must define always a value.");
 			
 			fn.registerConstant(this);
 		}

@@ -2,16 +2,54 @@ package test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
 
 import jllvmgen.LLVMDataValue;
+import jllvmgen.LLVMFunction;
+import jllvmgen.LLVMModule;
+import jllvmgen.misc.LLVMException;
+import jllvmgen.types.ILLVMMemoryType;
 import jllvmgen.types.LLVMValueType;
+import jllvmgen.types.LLVMVoidType;
 
 
 public class TypeTest
 {
+	@Test
+	public void testDataValueTypesCreation()
+	{
+		// Create constant with empty function argument.
+		try
+		{
+			LLVMDataValue.createConstant(null, "s1", LLVMValueType.createBool(), null);
+			fail("Excepted a LLVMException to be thrown.");
+		}
+		catch(LLVMException ex)
+		{
+			assertNotNull(ex);
+		}
+		
+		// Create constant with empty value.
+		try
+		{
+			var fn = LLVMFunction.createWithoutParameters(
+					LLVMModule.create("junittest.java"),
+					"junittest",
+					LLVMVoidType.createVoid());
+			
+			LLVMDataValue.createConstant(fn, "s1", LLVMValueType.createBool(), null);
+			fail("Excepted a LLVMException to be thrown.");
+		}
+		catch(LLVMException ex)
+		{
+			assertNotNull(ex);
+		}
+	}
+	
     @Test
     public void equalPrimitiveTypes() throws Exception
     {
@@ -58,8 +96,8 @@ public class TypeTest
     	}
     	
     	{
-			LLVMDataValue type1 = LLVMDataValue.create("s1", LLVMValueType.createf32());
-			LLVMDataValue type2 = LLVMDataValue.create("s2", LLVMValueType.createf32());
+			LLVMDataValue type1 = LLVMDataValue.createLocalVariable("s1", LLVMValueType.createf32());
+			LLVMDataValue type2 = LLVMDataValue.createLocalVariable("s2", LLVMValueType.createf32());
 			
 			assertEquals(type1.getType(), type2.getType());
     	}
