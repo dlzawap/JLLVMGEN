@@ -4,9 +4,11 @@ import java.util.ArrayList;
 
 import jllvmgen.enums.LLVMRuntimePreemptionSpecifiers;
 import jllvmgen.instructions.ILLVMBaseInst;
+import jllvmgen.internal.LLVMLabelSection;
 import jllvmgen.misc.KeyValueList;
 import jllvmgen.misc.LLVMException;
 import jllvmgen.types.ILLVMMemoryType;
+import jllvmgen.types.LLVMLabelType;
 
 public class LLVMFunction
 {
@@ -18,6 +20,7 @@ public class LLVMFunction
 	private ArrayList<ILLVMBaseInst> instructions = new ArrayList<ILLVMBaseInst>();
 	private LLVMRuntimePreemptionSpecifiers runtimePreemptionSpecifier;
 	
+	private ArrayList<LLVMLabelSection> labelSections;
 	
 	
 	private int numberOfDefinedValueVars = 0;
@@ -88,12 +91,33 @@ public class LLVMFunction
 		return module.autoRegisterGlobalVars();
 	}
 	
-	public void registerInst(ILLVMBaseInst instruction) throws LLVMException
+	public void registerInstruction(ILLVMBaseInst instruction) throws LLVMException
 	{
 		if (instruction == null)
 			throw new LLVMException("Parameter \"instruction\" is null or empty.");
 		
-		instructions.add(instruction);
+		// Check if any label section is available, if not add it to the default instruction list.
+		if (labelSections.size() == 0)
+			instructions.add(instruction);
+		else
+			// Registers instruction to the last label section.
+			labelSections.get(labelSections.size() - 1)
+				.registerInstruction(instruction);
+	}
+	
+	public void registersInstructionIntoLabelSection(LLVMLabelType labelType, ILLVMBaseInst instruction) throws LLVMException
+	{
+		if (labelType == null)
+			throw new LLVMException("Parameter \"labelType\" is null or empty.");
+		
+		// Search for label section and registers instruction to it.
+		for (var section : labelSections)
+		{
+			if (section.getLabelType().equals(labelType))
+			{
+				section.registerInstruction(instruction);
+			}
+		}
 	}
 	
 	public void registerGlobalVariable(LLVMDataPointer variable) throws LLVMException
@@ -104,6 +128,20 @@ public class LLVMFunction
 	public void registerConstant(LLVMDataValue constant) throws LLVMException
 	{
 		module.registerConstant(constant);
+	}
+	
+	
+	/**
+	 * Registers label and appends a new label section on the end of the function.
+	 * @param label
+	 * @throws LLVMException
+	 */
+	public void registerLabel(LLVMLabelType label) throws LLVMException
+	{
+		if (label == null)
+			throw new LLVMException("Parameter \"label\" is null or empty.");
+		
+		labelSections.add(new LLVMLabelSection(label));
 	}
 	
 	

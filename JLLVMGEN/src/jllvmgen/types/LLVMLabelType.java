@@ -4,26 +4,37 @@ import jllvmgen.misc.LLVMException;
 
 public class LLVMLabelType implements ILLVMCodeCreationFunctionality
 {
-	private String name;
+	private String identifier;
 	
-	public void setName(String name) throws LLVMException
+	public void setName(String identifier) throws LLVMException
 	{
-		if (name == null)
+		if (identifier == null)
 			throw new LLVMException("Parameter \"name\" is null or empty.");
 		
-		this.name = name;
-	}
-	
-	public String getName()
-	{
-		return name;
+		this.identifier = identifier;
 	}
 
 	@Override
-	public String getTypeDefinitionString() throws LLVMException {
-		return name + ":";
+	public String getTypeDefinitionString() throws LLVMException
+	{
+		return identifier + ":";
 	}
 	
-	// definition with :
-	// but value starts with %
+	public String getIdentifier()
+	{
+		return "%" + identifier;
+	}
+	
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (obj == null)
+			return false;
+		
+		if (obj instanceof LLVMLabelType)
+		{
+			return ((LLVMLabelType)obj).identifier.equals(this.identifier);
+		}
+		return false;
+	}
 }
