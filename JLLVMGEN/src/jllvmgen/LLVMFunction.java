@@ -166,6 +166,11 @@ public class LLVMFunction
 			sb.append('\n');
 		}
 		
+		for (var labelSection : labelSections)
+		{
+			sb.append(labelSection.getDefintionString());
+		}
+		
 		sb.append("}");
 		
 		return sb.toString();

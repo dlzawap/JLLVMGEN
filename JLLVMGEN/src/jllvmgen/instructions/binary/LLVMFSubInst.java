@@ -5,6 +5,7 @@ import jllvmgen.LLVMFunction;
 import jllvmgen.enums.LLVMFastMathFlags;
 import jllvmgen.instructions.ILLVMBaseInst;
 import jllvmgen.misc.LLVMException;
+import jllvmgen.types.LLVMLabelType;
 import jllvmgen.types.LLVMValueType;
 import jllvmgen.types.LLVMVectorType;
 
@@ -19,16 +20,6 @@ public class LLVMFSubInst implements ILLVMBaseInst
 	private LLVMDataValue op1;
 	private LLVMDataValue op2;
 	private LLVMFastMathFlags[] fastMathFlags;
-	
-	public static LLVMFSubInst create(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2) throws LLVMException
-	{
-		return new LLVMFSubInst(fn, op1, op2, null);
-	}
-	
-	public static LLVMFSubInst create(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2, LLVMFastMathFlags... fastMathFlags) throws LLVMException
-	{
-		return new LLVMFSubInst(fn, op1, op2, fastMathFlags);
-	}
 	
 	public LLVMFSubInst(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2, LLVMFastMathFlags[] fastMathFlags) throws LLVMException
 	{
@@ -65,12 +56,8 @@ public class LLVMFSubInst implements ILLVMBaseInst
 		this.op2 = op2;
 		this.fastMathFlags = fastMathFlags;
 		
-		// Pre-generate value.
+		// Pre-generate result value.
 		result = LLVMDataValue.createLocalVariable(fn.getNextFreeLocalVariableValueName(), op1.getType());
-		
-		// If activated, register instruction.
-		if (fn.autoRegisterInstructions())
-			fn.registerInst(this);
 	}
 	
 	public LLVMDataValue getResult()
@@ -102,4 +89,56 @@ public class LLVMFSubInst implements ILLVMBaseInst
 		
 		return sb.toString();
 	}
+	
+	/*
+	 * Factory functions.
+	 */
+	
+	public static LLVMFSubInst create(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2) throws LLVMException
+	{
+		var instruction = new LLVMFSubInst(fn, op1, op2, null);
+		
+		// Register instruction if automatic registration is enabled.
+		if (fn.autoRegisterInstructions())
+			fn.registerInstruction(instruction);
+		
+		return instruction;
+	}
+	
+	public static LLVMFSubInst create(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2, LLVMFastMathFlags... fastMathFlags) throws LLVMException
+	{
+		var instruction = new LLVMFSubInst(fn, op1, op2, fastMathFlags);
+		
+		// Register instruction if automatic registration is enabled.
+		if (fn.autoRegisterInstructions())
+			fn.registerInstruction(instruction);
+		
+		return instruction;
+	}
+	
+	public static LLVMFSubInst create(LLVMFunction fn, LLVMLabelType label, LLVMDataValue op1, LLVMDataValue op2) throws LLVMException
+	{
+		var instruction = new LLVMFSubInst(fn, op1, op2, null);
+		
+		// Register instruction if automatic registration is enabled.
+		if (fn.autoRegisterInstructions())
+			fn.registersInstructionIntoLabelSection(label, instruction);
+		
+		return instruction;
+	}
+	
+	public static LLVMFSubInst create(LLVMFunction fn, LLVMLabelType label, LLVMDataValue op1, LLVMDataValue op2, LLVMFastMathFlags... fastMathFlags) throws LLVMException
+	{
+		var instruction = new LLVMFSubInst(fn, op1, op2, fastMathFlags);
+		
+		// Register instruction if automatic registration is enabled.
+		if (fn.autoRegisterInstructions())
+			fn.registersInstructionIntoLabelSection(label, instruction);
+		
+		return instruction;
+	}
+	
+	/*
+	 * End of factory functions.
+	 */
 }
