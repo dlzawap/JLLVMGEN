@@ -4,11 +4,14 @@ import jllvmgen.LLVMDataValue;
 import jllvmgen.LLVMFunction;
 import jllvmgen.instructions.ILLVMBaseInst;
 import jllvmgen.misc.LLVMException;
+import jllvmgen.types.LLVMLabelType;
 import jllvmgen.types.LLVMValueType;
 import jllvmgen.types.LLVMVectorType;
 
 /**
- *
+ * The ‘shl’ instruction returns the first operand shifted to the left a specified number of bits.
+ * Both arguments to the ‘shl’ instruction must be the same integer or vector of integer type.
+ * ‘op2’ is treated as an unsigned value.
  */
 public class LLVMShlInst implements ILLVMBaseInst
 {
@@ -17,26 +20,6 @@ public class LLVMShlInst implements ILLVMBaseInst
 	private LLVMDataValue op2;
 	private boolean noUnsignedWrap;
 	private boolean noSignedWrap;
-	
-	public static LLVMShlInst create(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2, boolean noUnsignedWrap, boolean noSignedWrap) throws LLVMException
-	{
-		return new LLVMShlInst(fn, op1, op2, noUnsignedWrap, noSignedWrap);
-	}
-	
-	public static LLVMShlInst createNoUnsignedWrap(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2) throws LLVMException
-	{
-		return new LLVMShlInst(fn, op1, op2, true, false);
-	}
-	
-	public static LLVMShlInst createNoSignedWrap(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2) throws LLVMException
-	{
-		return new LLVMShlInst(fn, op1, op2, false, true);
-	}
-	
-	public static LLVMShlInst createNoUnsignedAndSignedWrap(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2) throws LLVMException
-	{
-		return new LLVMShlInst(fn, op1, op2, true, true);
-	}
 	
 	public LLVMShlInst(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2, boolean noUnsignedWrap, boolean noSignedWrap) throws LLVMException
 	{
@@ -78,11 +61,8 @@ public class LLVMShlInst implements ILLVMBaseInst
 		this.noUnsignedWrap = noUnsignedWrap;
 		this.noSignedWrap = noSignedWrap;
 		
-		// Pre-generate value.
+		// Pre-generate result value.
 		result = LLVMDataValue.createLocalVariable(fn.getNextFreeLocalVariableValueName(), op1.getType());
-		
-		if (fn.autoRegisterInstructions())
-			fn.registerInst(this);
 	}
 	
 	public LLVMDataValue getResult()
@@ -110,4 +90,100 @@ public class LLVMShlInst implements ILLVMBaseInst
 		
 		return sb.toString();
 	}
+	
+	/*
+	 * Factory functions.
+	 */
+	
+	public static LLVMShlInst create(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2, boolean noUnsignedWrap, boolean noSignedWrap) throws LLVMException
+	{
+		var instruction = new LLVMShlInst(fn, op1, op2, noUnsignedWrap, noSignedWrap);
+		
+		// Register instruction if automatic registration is enabled.
+		if (fn.autoRegisterInstructions())
+			fn.registerInstruction(instruction);
+		
+		return instruction;
+	}
+	
+	public static LLVMShlInst createNoUnsignedWrap(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2) throws LLVMException
+	{
+		var instruction = new LLVMShlInst(fn, op1, op2, true, false);
+		
+		// Register instruction if automatic registration is enabled.
+		if (fn.autoRegisterInstructions())
+			fn.registerInstruction(instruction);
+		
+		return instruction;
+	}
+	
+	public static LLVMShlInst createNoSignedWrap(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2) throws LLVMException
+	{
+		var instruction = new LLVMShlInst(fn, op1, op2, false, true);
+		
+		// Register instruction if automatic registration is enabled.
+		if (fn.autoRegisterInstructions())
+			fn.registerInstruction(instruction);
+		
+		return instruction;
+	}
+	
+	public static LLVMShlInst createNoUnsignedAndSignedWrap(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2) throws LLVMException
+	{
+		var instruction = new LLVMShlInst(fn, op1, op2, true, true);
+		
+		// Register instruction if automatic registration is enabled.
+		if (fn.autoRegisterInstructions())
+			fn.registerInstruction(instruction);
+		
+		return instruction;
+	}
+	
+	public static LLVMShlInst create(LLVMFunction fn, LLVMLabelType label, LLVMDataValue op1, LLVMDataValue op2, boolean noUnsignedWrap, boolean noSignedWrap) throws LLVMException
+	{
+		var instruction = new LLVMShlInst(fn, op1, op2, noUnsignedWrap, noSignedWrap);
+		
+		// Register instruction if automatic registration is enabled.
+		if (fn.autoRegisterInstructions())
+			fn.registersInstructionIntoLabelSection(label, instruction);
+		
+		return instruction;
+	}
+	
+	public static LLVMShlInst createNoUnsignedWrap(LLVMFunction fn, LLVMLabelType label, LLVMDataValue op1, LLVMDataValue op2) throws LLVMException
+	{
+		var instruction = new LLVMShlInst(fn, op1, op2, true, false);
+		
+		// Register instruction if automatic registration is enabled.
+		if (fn.autoRegisterInstructions())
+			fn.registersInstructionIntoLabelSection(label, instruction);
+		
+		return instruction;
+	}
+	
+	public static LLVMShlInst createNoSignedWrap(LLVMFunction fn, LLVMLabelType label, LLVMDataValue op1, LLVMDataValue op2) throws LLVMException
+	{
+		var instruction = new LLVMShlInst(fn, op1, op2, false, true);
+		
+		// Register instruction if automatic registration is enabled.
+		if (fn.autoRegisterInstructions())
+			fn.registersInstructionIntoLabelSection(label, instruction);
+		
+		return instruction;
+	}
+	
+	public static LLVMShlInst createNoUnsignedAndSignedWrap(LLVMFunction fn, LLVMLabelType label, LLVMDataValue op1, LLVMDataValue op2) throws LLVMException
+	{
+		var instruction = new LLVMShlInst(fn, op1, op2, true, true);
+		
+		// Register instruction if automatic registration is enabled.
+		if (fn.autoRegisterInstructions())
+			fn.registersInstructionIntoLabelSection(label, instruction);
+		
+		return instruction;
+	}
+	
+	/*
+	 * End of factory functions.
+	 */
 }

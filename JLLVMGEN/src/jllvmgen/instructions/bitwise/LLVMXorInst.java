@@ -4,19 +4,19 @@ import jllvmgen.LLVMDataValue;
 import jllvmgen.LLVMFunction;
 import jllvmgen.instructions.ILLVMBaseInst;
 import jllvmgen.misc.LLVMException;
+import jllvmgen.types.LLVMLabelType;
 import jllvmgen.types.LLVMValueType;
 import jllvmgen.types.LLVMVectorType;
 
+/**
+ * The ‘xor’ instruction returns the bitwise logical exclusive or of its two operands.
+ * The xor is used to implement the “one’s complement” operation, which is the “~” operator in C.
+ */
 public class LLVMXorInst implements ILLVMBaseInst
 {
 	private LLVMDataValue result;
 	private LLVMDataValue op1;
 	private LLVMDataValue op2;
-	
-	public static LLVMXorInst create(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2) throws LLVMException
-	{
-		return new LLVMXorInst(fn, op1, op2);
-	}
 	
 	public LLVMXorInst(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2) throws LLVMException
 	{
@@ -53,12 +53,8 @@ public class LLVMXorInst implements ILLVMBaseInst
 		this.op2 = op2;
 		
 		
-		// Pre-generate value.
+		// Pre-generate result value.
 		result = LLVMDataValue.createLocalVariable(fn.getNextFreeLocalVariableValueName(), op1.getType());
-		
-		// If activated, register instruction.
-		if (fn.autoRegisterInstructions())
-			fn.registerInst(this);
 	}
 	
 	public LLVMDataValue getResult()
@@ -81,4 +77,22 @@ public class LLVMXorInst implements ILLVMBaseInst
 		
 		return sb.toString();
 	}
+	
+	/*
+	 * Factory functions.
+	 */
+	
+	public static LLVMXorInst create(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2) throws LLVMException
+	{
+		return new LLVMXorInst(fn, op1, op2);
+	}
+	
+	public static LLVMXorInst create(LLVMFunction fn, LLVMLabelType label, LLVMDataValue op1, LLVMDataValue op2) throws LLVMException
+	{
+		return new LLVMXorInst(fn, op1, op2);
+	}
+	
+	/*
+	 * End of factory functions.
+	 */
 }
