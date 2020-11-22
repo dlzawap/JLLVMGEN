@@ -5,27 +5,20 @@ import jllvmgen.LLVMFunction;
 import jllvmgen.enums.LLVMFastMathFlags;
 import jllvmgen.instructions.ILLVMBaseInst;
 import jllvmgen.misc.LLVMException;
+import jllvmgen.types.LLVMLabelType;
 import jllvmgen.types.LLVMValueType;
 import jllvmgen.types.LLVMVectorType;
 
-//TODO: Add vector validation.
 
+/**
+ * The ‘fneg’ instruction returns the negation of its operand.
+ * The argument to the ‘fneg’ instruction must be a floating-point or vector of floating-point values.
+ */
 public class LLVMFnegInst implements ILLVMBaseInst
 {
 	private LLVMDataValue result;
 	private LLVMDataValue value;
 	private LLVMFastMathFlags[] fastMathFlags;
-	
-	
-	public static LLVMFnegInst create(LLVMFunction fn, LLVMDataValue value) throws LLVMException
-	{
-		return new LLVMFnegInst(fn, value, null);
-	}
-
-	public static LLVMFnegInst create(LLVMFunction fn, LLVMDataValue value, LLVMFastMathFlags... fastMathFlags) throws LLVMException
-	{
-		return new LLVMFnegInst(fn, value, fastMathFlags);
-	}
 	
 	public LLVMFnegInst(LLVMFunction fn, LLVMDataValue value, LLVMFastMathFlags[] fastMathFlags) throws LLVMException
 	{
@@ -35,22 +28,28 @@ public class LLVMFnegInst implements ILLVMBaseInst
 			throw new LLVMException("Parameter \"value\" is null or empty.");
 		if (value == null)
 			throw new LLVMException("Parameter \"value\" is null or empty.");
-		if (!value.getType().isValueType() &&
-			!((LLVMValueType)value.getType()).holdsFloatingPoint())// ||
-			//!value.getType().isVectorType() &&
-			//!((LLVMValueType)((LLVMVectorType)value.getType())).holdsFloatingPoint())
+		if (value.getType().isValueType())
 		{
-			throw new LLVMException("Fneg instruction is only on floating-point or vector of floating-point values allowed.");
+			LLVMValueType temp = (LLVMValueType)value.getType();
+			if (!temp.holdsFloatingPoint())
+				throw new LLVMException("Fneg instruction is only on floating-point or vector of floating-point values allowed.");
+		}
+		else if (value.getType().isVectorType())
+		{
+			if (((LLVMVectorType)value.getType()).getBaseType().isValueType())
+			{
+				LLVMValueType temp = (LLVMValueType)((LLVMVectorType)value.getType()).getBaseType();
+				if (!temp.holdsFloatingPoint())
+					throw new LLVMException("Fneg instruction is only on floating-point or vector of floating-point values allowed.");
+			}
+			else throw new LLVMException("Fneg instruction is only on floating-point or vector of floating-point values allowed.");
 		}
 		
 		this.value = value;
 		this.fastMathFlags = fastMathFlags;
 		
-		// Pre-generate result type.
+		// Pre-generate result value.
 		result = LLVMDataValue.createLocalVariable(fn.getNextFreeLocalVariableValueName(), value.getType());
-		
-		// Register instruction.
-		fn.registerInst(this);
 	}
 	
 	
@@ -78,4 +77,56 @@ public class LLVMFnegInst implements ILLVMBaseInst
 		
 		return sb.toString();
 	}
+	
+	/*
+	 * Factory functions.
+	 */
+	
+	public static LLVMFnegInst create(LLVMFunction fn, LLVMDataValue value) throws LLVMException
+	{
+		var instruction = new LLVMFnegInst(fn, value, null);
+		
+		// Register instruction if automatic registration is enabled.
+		if (fn.autoRegisterInstructions())
+			fn.registerInstruction(instruction);
+		
+		return instruction;
+	}
+
+	public static LLVMFnegInst create(LLVMFunction fn, LLVMDataValue value, LLVMFastMathFlags... fastMathFlags) throws LLVMException
+	{
+		var instruction = new LLVMFnegInst(fn, value, fastMathFlags);
+		
+		// Register instruction if automatic registration is enabled.
+		if (fn.autoRegisterInstructions())
+			fn.registerInstruction(instruction);
+		
+		return instruction;
+	}
+	
+	public static LLVMFnegInst create(LLVMFunction fn, LLVMLabelType label, LLVMDataValue value) throws LLVMException
+	{
+		var instruction = new LLVMFnegInst(fn, value, null);
+		
+		// Register instruction if automatic registration is enabled.
+		if (fn.autoRegisterInstructions())
+			fn.registersInstructionIntoLabelSection(label, instruction);
+		
+		return instruction;
+	}
+
+	public static LLVMFnegInst create(LLVMFunction fn, LLVMLabelType label, LLVMDataValue value, LLVMFastMathFlags... fastMathFlags) throws LLVMException
+	{
+		var instruction = new LLVMFnegInst(fn, value, fastMathFlags);
+		
+		// Register instruction if automatic registration is enabled.
+		if (fn.autoRegisterInstructions())
+			fn.registersInstructionIntoLabelSection(label, instruction);
+		
+		return instruction;
+	}
+	
+	/*
+	 * End of factory functions.
+	 */
 }
