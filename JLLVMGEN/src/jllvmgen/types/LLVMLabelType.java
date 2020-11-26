@@ -1,23 +1,35 @@
 package jllvmgen.types;
 
+import java.util.ArrayList;
+
+import jllvmgen.LLVMFunction;
+import jllvmgen.instructions.ILLVMBaseInst;
 import jllvmgen.misc.LLVMException;
 
 public class LLVMLabelType implements ILLVMCodeCreationFunctionality
 {
 	private String identifier;
+	private ArrayList<ILLVMBaseInst> instructions = new ArrayList<ILLVMBaseInst>();
 	
-	public void setName(String identifier) throws LLVMException
+	private LLVMLabelType(String identifier) throws LLVMException
+	{
+		setIdentifier(identifier);
+	}
+	
+	private void setIdentifier(String identifier) throws LLVMException
 	{
 		if (identifier == null)
-			throw new LLVMException("Parameter \"name\" is null or empty.");
+			throw new LLVMException("Parameter \"identifier\" is null or empty.");
 		
 		this.identifier = identifier;
 	}
 
-	@Override
-	public String getTypeDefinitionString() throws LLVMException
+	public void registerInstruction(ILLVMBaseInst instruction) throws LLVMException
 	{
-		return identifier + ":";
+		if (instruction == null)
+			throw new LLVMException("Parameter \"instruction\" is null or empty.");
+		
+		instructions.add(instruction);
 	}
 	
 	public String getIdentifier()
@@ -26,15 +38,48 @@ public class LLVMLabelType implements ILLVMCodeCreationFunctionality
 	}
 	
 	@Override
-	public boolean equals(Object obj)
+	public String getTypeDefinitionString() throws LLVMException
 	{
-		if (obj == null)
-			return false;
+		StringBuilder sb = new StringBuilder(identifier).append(":");
 		
-		if (obj instanceof LLVMLabelType)
+		for (var inst : instructions)
 		{
-			return ((LLVMLabelType)obj).identifier.equals(this.identifier);
+			sb.append("\n\t").append(inst.getInstructionString());
 		}
-		return false;
+		
+		return sb.toString();
 	}
+	
+	/*
+	 * Factory functions.
+	 */
+	
+	public static LLVMLabelType create(LLVMFunction fn, String identifier, boolean autoRegisterLabelType) throws LLVMException
+	{
+		var labelType = new LLVMLabelType(identifier);
+		
+		// Register labelType if automatic registration is enabled.
+		if (autoRegisterLabelType)
+			fn.registerLabelType(labelType);
+		
+		return labelType;
+	}
+	
+	public static LLVMLabelType createAfterOtherLabel(LLVMFunction fn, String identifier, LLVMLabelType parentLabelType, boolean autoRegisterLabelType) throws LLVMException
+	{
+		var labelType = new LLVMLabelType(identifier);
+		
+		// Register labelType if automatic registration is enabled.
+		if (autoRegisterLabelType)
+			fn.registerLabelAfterOtherLabelType(labelType, parentLabelType);
+		
+		return labelType;
+	}
+	
+	
+	
+	
+	/*
+	 * End of factory functions.
+	 */
 }

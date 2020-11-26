@@ -104,24 +104,24 @@ public class LLVMFnegInst implements ILLVMBaseInst
 		return instruction;
 	}
 	
-	public static LLVMFnegInst create(LLVMFunction fn, LLVMLabelType label, LLVMDataValue value) throws LLVMException
+	public static LLVMFnegInst create(LLVMFunction fn, LLVMLabelType parentLabelType, LLVMDataValue value) throws LLVMException
 	{
 		var instruction = new LLVMFnegInst(fn, value, null);
 		
 		// Register instruction if automatic registration is enabled.
 		if (fn.autoRegisterInstructions())
-			fn.registersInstructionIntoLabelSection(label, instruction);
+			parentLabelType.registerInstruction(instruction);
 		
 		return instruction;
 	}
 
-	public static LLVMFnegInst create(LLVMFunction fn, LLVMLabelType label, LLVMDataValue value, LLVMFastMathFlags... fastMathFlags) throws LLVMException
+	public static LLVMFnegInst create(LLVMFunction fn, LLVMLabelType parentLabelType, LLVMDataValue value, LLVMFastMathFlags... fastMathFlags) throws LLVMException
 	{
 		var instruction = new LLVMFnegInst(fn, value, fastMathFlags);
 		
 		// Register instruction if automatic registration is enabled.
 		if (fn.autoRegisterInstructions())
-			fn.registersInstructionIntoLabelSection(label, instruction);
+			parentLabelType.registerInstruction(instruction);
 		
 		return instruction;
 	}

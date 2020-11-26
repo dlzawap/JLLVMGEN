@@ -5,6 +5,7 @@ import jllvmgen.LLVMFunction;
 import jllvmgen.enums.LLVMFCompareConditions;
 import jllvmgen.instructions.ILLVMBaseInst;
 import jllvmgen.misc.LLVMException;
+import jllvmgen.types.LLVMLabelType;
 import jllvmgen.types.LLVMValueType;
 
 public class LLVMFCmpInst implements ILLVMBaseInst
@@ -14,12 +15,7 @@ public class LLVMFCmpInst implements ILLVMBaseInst
 	private LLVMDataValue op1;
 	private LLVMDataValue op2;
 	
-	public static LLVMFCmpInst create(LLVMFunction fn, LLVMFCompareConditions compareCondition, LLVMDataValue op1, LLVMDataValue op2) throws LLVMException
-	{
-		return new LLVMFCmpInst(fn, compareCondition, op1, op2);
-	}
-	
-	public LLVMFCmpInst(LLVMFunction fn, LLVMFCompareConditions compareCondition, LLVMDataValue op1, LLVMDataValue op2) throws LLVMException
+	private LLVMFCmpInst(LLVMFunction fn, LLVMFCompareConditions compareCondition, LLVMDataValue op1, LLVMDataValue op2) throws LLVMException
 	{
 		if (fn == null)
 			throw new LLVMException("Parameter \"fn\" is null or empty.");
@@ -42,11 +38,8 @@ public class LLVMFCmpInst implements ILLVMBaseInst
 		this.op1 = op1;
 		this.op2 = op2;
 		
-		// Pre-generate result.
+		// Pre-generate result value.
 		result = LLVMDataValue.createLocalVariable(fn.getNextFreeLocalVariableValueName(), LLVMValueType.createBool());
-		
-		if (fn.autoRegisterInstructions())
-			fn.registerInst(this);
 	}
 	
 	public LLVMDataValue getResult()
@@ -70,4 +63,34 @@ public class LLVMFCmpInst implements ILLVMBaseInst
 		
 		return sb.toString();
 	}
+	
+	/*
+	 * Factory functions.
+	 */
+	
+	public static LLVMFCmpInst create(LLVMFunction fn, LLVMFCompareConditions compareCondition, LLVMDataValue op1, LLVMDataValue op2) throws LLVMException
+	{
+		var instruction = new LLVMFCmpInst(fn, compareCondition, op1, op2);
+		
+		// Register instruction if automatic registration is enabled.
+		if (fn.autoRegisterInstructions())
+			fn.registerInstruction(instruction);
+		
+		return instruction;
+	}
+	
+	public static LLVMFCmpInst create(LLVMFunction fn, LLVMLabelType parentLabelType, LLVMFCompareConditions compareCondition, LLVMDataValue op1, LLVMDataValue op2) throws LLVMException
+	{
+		var instruction = new LLVMFCmpInst(fn, compareCondition, op1, op2);
+		
+		// Register instruction if automatic registration is enabled.
+		if (fn.autoRegisterInstructions())
+			parentLabelType.registerInstruction(instruction);
+		
+		return instruction;
+	}
+	
+	/*
+	 * End of factory functions.
+	 */
 }

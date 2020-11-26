@@ -103,13 +103,13 @@ public class LLVMAddInst implements ILLVMBaseInst
 		return instruction;
 	}
 	
-	public static LLVMAddInst create(LLVMFunction fn, LLVMLabelType label, LLVMDataValue op1, LLVMDataValue op2, boolean noUnsignedWrap, boolean noSignedWrap) throws LLVMException
+	public static LLVMAddInst create(LLVMFunction fn, LLVMLabelType parentLabelType, LLVMDataValue op1, LLVMDataValue op2, boolean noUnsignedWrap, boolean noSignedWrap) throws LLVMException
 	{
 		var instruction = new LLVMAddInst(fn, op1, op2, noUnsignedWrap, noSignedWrap);
 		
 		// Register instruction if automatic registration is enabled.
 		if (fn.autoRegisterInstructions())
-			fn.registersInstructionIntoLabelSection(label, instruction);
+			parentLabelType.registerInstruction(instruction);
 		
 		return instruction;
 	}

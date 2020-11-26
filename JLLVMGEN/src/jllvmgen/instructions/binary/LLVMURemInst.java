@@ -88,13 +88,13 @@ public class LLVMURemInst implements ILLVMBaseInst
 		return instruction;
 	}
 	
-	public static LLVMURemInst create(LLVMFunction fn, LLVMLabelType label, LLVMDataValue op1, LLVMDataValue op2) throws LLVMException
+	public static LLVMURemInst create(LLVMFunction fn, LLVMLabelType parentLabelType, LLVMDataValue op1, LLVMDataValue op2) throws LLVMException
 	{
 		var instruction = new LLVMURemInst(fn, op1, op2);
 		
 		// Register instruction if automatic registration is enabled.
 		if (fn.autoRegisterInstructions())
-			fn.registersInstructionIntoLabelSection(label, instruction);
+			parentLabelType.registerInstruction(instruction);
 		
 		return instruction;
 	}

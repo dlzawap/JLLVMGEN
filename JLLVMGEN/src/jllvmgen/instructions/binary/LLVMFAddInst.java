@@ -116,24 +116,24 @@ public class LLVMFAddInst implements ILLVMBaseInst
 		return instruction;
 	}
 	
-	public static LLVMFAddInst create(LLVMFunction fn, LLVMLabelType label, LLVMDataValue op1, LLVMDataValue op2) throws LLVMException
+	public static LLVMFAddInst create(LLVMFunction fn, LLVMLabelType parentLabelType, LLVMDataValue op1, LLVMDataValue op2) throws LLVMException
 	{
 		var instruction = new LLVMFAddInst(fn, op1, op2, null);
 		
 		// Register instruction if automatic registration is enabled.
 		if (fn.autoRegisterInstructions())
-			fn.registersInstructionIntoLabelSection(label, instruction);
+			parentLabelType.registerInstruction(instruction);
 		
 		return instruction;
 	}
 	
-	public static LLVMFAddInst create(LLVMFunction fn, LLVMLabelType label, LLVMDataValue op1, LLVMDataValue op2, LLVMFastMathFlags... fastMathFlags) throws LLVMException
+	public static LLVMFAddInst create(LLVMFunction fn, LLVMLabelType parentLabelType, LLVMDataValue op1, LLVMDataValue op2, LLVMFastMathFlags... fastMathFlags) throws LLVMException
 	{
 		var instruction = new LLVMFAddInst(fn, op1, op2, fastMathFlags);
 		
 		// Register instruction if automatic registration is enabled.
 		if (fn.autoRegisterInstructions())
-			fn.registersInstructionIntoLabelSection(label, instruction);
+			parentLabelType.registerInstruction(instruction);
 		
 		return instruction;
 	}

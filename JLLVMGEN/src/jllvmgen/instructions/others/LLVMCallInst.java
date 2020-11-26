@@ -12,6 +12,7 @@ import jllvmgen.enums.LLVMTailFlags;
 import jllvmgen.instructions.ILLVMBaseInst;
 import jllvmgen.misc.LLVMException;
 import jllvmgen.types.ILLVMMemoryType;
+import jllvmgen.types.LLVMLabelType;
 
 /*
  * TODO:
@@ -39,21 +40,7 @@ public class LLVMCallInst implements ILLVMBaseInst
 	private LLVMFastMathFlags[] 	fastMathFlags;
 	private LLVMCallingConvention 	callingConv;
 
-	
-	public static LLVMCallInst create(
-			LLVMFunction fn,
-			ILLVMMemoryType resultType,
-			String calleeFnName,
-			LLVMTailFlags tailFlag,
-			LLVMFastMathFlags[] fastMathFlags,
-			LLVMCallingConvention cc,
-			Integer addrSpace,
-			ArrayList<ILLVMVariableType> arguments) throws LLVMException
-	{
-		return new LLVMCallInst(fn, resultType, calleeFnName, tailFlag, fastMathFlags, cc, addrSpace, arguments);
-	}
-	
-	public LLVMCallInst(
+	private LLVMCallInst(
 			LLVMFunction fn,
 			ILLVMMemoryType resultType,
 			String calleeFnName,
@@ -82,9 +69,6 @@ public class LLVMCallInst implements ILLVMBaseInst
 					fn.getNextFreeLocalVariableValueName(),
 					resultType);
 		}
-		
-		if (fn.autoRegisterInstructions())
-			fn.registerInst(this);
 	}
 	
 	public LLVMDataValue getResultValue()
@@ -139,4 +123,51 @@ public class LLVMCallInst implements ILLVMBaseInst
 		sb.append(")");
 		return sb.toString();
 	}
+	
+	/*
+	 * Factory functions.
+	 */
+	
+	public static LLVMCallInst create(
+			LLVMFunction fn,
+			ILLVMMemoryType resultType,
+			String calleeFnName,
+			LLVMTailFlags tailFlag,
+			LLVMFastMathFlags[] fastMathFlags,
+			LLVMCallingConvention cc,
+			Integer addrSpace,
+			ArrayList<ILLVMVariableType> arguments) throws LLVMException
+	{
+		var instruction = new LLVMCallInst(fn, resultType, calleeFnName, tailFlag, fastMathFlags, cc, addrSpace, arguments);
+		
+		// Register instruction if automatic registration is enabled.
+		if (fn.autoRegisterInstructions())
+			fn.registerInstruction(instruction);
+		
+		return instruction;
+	}
+	
+	public static LLVMCallInst create(
+			LLVMFunction fn,
+			LLVMLabelType parentLabelType,
+			ILLVMMemoryType resultType,
+			String calleeFnName,
+			LLVMTailFlags tailFlag,
+			LLVMFastMathFlags[] fastMathFlags,
+			LLVMCallingConvention cc,
+			Integer addrSpace,
+			ArrayList<ILLVMVariableType> arguments) throws LLVMException
+	{
+		var instruction = new LLVMCallInst(fn, resultType, calleeFnName, tailFlag, fastMathFlags, cc, addrSpace, arguments);
+		
+		// Register instruction if automatic registration is enabled.
+		if (fn.autoRegisterInstructions())
+			parentLabelType.registerInstruction(instruction);
+		
+		return instruction;
+	}
+	
+	/*
+	 * End of factory functions.
+	 */
 }

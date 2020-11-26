@@ -5,20 +5,16 @@ import jllvmgen.LLVMDataPointer;
 import jllvmgen.LLVMDataValue;
 import jllvmgen.instructions.ILLVMBaseInst;
 import jllvmgen.misc.LLVMException;
+import jllvmgen.types.LLVMLabelType;
 
 public class LLVMLoadInst  implements ILLVMBaseInst
 {
 	private LLVMDataValue result;
 	private LLVMDataPointer pointer;
 	
-	public static LLVMLoadInst createInst(LLVMFunction function, LLVMDataPointer pointer) throws LLVMException
+	private LLVMLoadInst(LLVMFunction fn, LLVMDataPointer pointer) throws LLVMException
 	{
-		return new LLVMLoadInst(function, pointer);
-	}
-	
-	private LLVMLoadInst(LLVMFunction function, LLVMDataPointer pointer) throws LLVMException
-	{
-		if (function == null)
+		if (fn == null)
 			throw new LLVMException("Parameter \"function\" is null or empty.");
 		if (pointer == null)
 			throw new LLVMException("Parameter \"pointer\" is null or empty");
@@ -28,11 +24,8 @@ public class LLVMLoadInst  implements ILLVMBaseInst
 		// Pre-generate value.
 		// Use base type of pointer type. (i32* -> i32)
 		result = LLVMDataValue.createLocalVariable(
-				function.getNextFreeLocalPointerValueName(),
-				pointer.getType().getBaseType());
-		
-		// Register instruction.
-		function.registerInst(this);
+				 fn.getNextFreeLocalPointerValueName(),
+				 pointer.getType().getBaseType());
 	}
 	
 	public LLVMDataValue getResult()
@@ -53,4 +46,34 @@ public class LLVMLoadInst  implements ILLVMBaseInst
 		
 		return sb.toString();
 	}
+	
+	/*
+	 * Factory functions.
+	 */
+	
+	public static LLVMLoadInst create(LLVMFunction fn, LLVMDataPointer pointer) throws LLVMException
+	{
+		var instruction = new LLVMLoadInst(fn, pointer);
+		
+		// Register instruction if automatic registration is enabled.
+		if (fn.autoRegisterInstructions())
+			fn.registerInstruction(instruction);
+		
+		return instruction;
+	}
+	
+	public static LLVMLoadInst create(LLVMFunction fn, LLVMLabelType parentLabelType, LLVMDataPointer pointer) throws LLVMException
+	{
+		var instruction = new LLVMLoadInst(fn, pointer);
+		
+		// Register instruction if automatic registration is enabled.
+		if (fn.autoRegisterInstructions())
+			parentLabelType.registerInstruction(instruction);
+		
+		return instruction;
+	}
+	
+	/*
+	 * End of factory functions.
+	 */
 }

@@ -5,17 +5,13 @@ import jllvmgen.LLVMFunction;
 import jllvmgen.instructions.ILLVMBaseInst;
 import jllvmgen.misc.LLVMException;
 import jllvmgen.types.ILLVMMemoryType;
+import jllvmgen.types.LLVMLabelType;
 import jllvmgen.types.LLVMValueType;
 
 public class LLVMSExtToInst implements ILLVMBaseInst
 {
 	private LLVMDataValue result;
 	private LLVMDataValue value;
-	
-	public static LLVMSExtToInst create(LLVMFunction fn, LLVMDataValue value, ILLVMMemoryType type) throws LLVMException
-	{
-		return new LLVMSExtToInst(fn, value, type);
-	}
 	
 	public LLVMSExtToInst(LLVMFunction fn, LLVMDataValue value, ILLVMMemoryType type) throws LLVMException
 	{
@@ -53,11 +49,8 @@ public class LLVMSExtToInst implements ILLVMBaseInst
 		else throw new LLVMException("Value type must be an integer value type.");
 			
 			
-		// Pre-generate value.
+		// Pre-generate result value.
 		result = LLVMDataValue.createLocalVariable(fn.getNextFreeLocalVariableValueName(), type);
-		
-		if (fn.autoRegisterInstructions())
-			fn.registerInst(this);
 	}
 	
 	@Override
@@ -73,4 +66,34 @@ public class LLVMSExtToInst implements ILLVMBaseInst
 		
 		return sb.toString();
 	}
+	
+	/*
+	 * Factory functions.
+	 */
+	
+	public static LLVMSExtToInst create(LLVMFunction fn, LLVMDataValue value, ILLVMMemoryType type) throws LLVMException
+	{
+		var instruction = new LLVMSExtToInst(fn, value, type);
+
+		// Register instruction if automatic registration is enabled.
+		if (fn.autoRegisterInstructions())
+			fn.registerInstruction(instruction);
+		
+		return instruction;
+	}
+	
+	public static LLVMSExtToInst create(LLVMFunction fn, LLVMLabelType parentLabelType, LLVMDataValue value, ILLVMMemoryType type) throws LLVMException
+	{
+		var instruction = new LLVMSExtToInst(fn, value, type);
+
+		// Register instruction if automatic registration is enabled.
+		if (fn.autoRegisterInstructions())
+			parentLabelType.registerInstruction(instruction);
+		
+		return instruction;
+	}
+	
+	/*
+	 * End of factory functions.
+	 */
 }

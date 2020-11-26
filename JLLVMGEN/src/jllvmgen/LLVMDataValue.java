@@ -114,6 +114,11 @@ public class LLVMDataValue implements ILLVMVariableType
 		return value;
 	}
 	
+	public boolean isValueOnly()
+	{
+		return variableType == ValueVariableTypes.value_only;
+	}
+	
 	@Override
 	public String getIdentifier()
 	{

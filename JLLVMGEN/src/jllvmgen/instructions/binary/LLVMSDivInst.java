@@ -98,13 +98,13 @@ public class LLVMSDivInst implements ILLVMBaseInst
 		return instruction;
 	}
 	
-	public static LLVMSDivInst create(LLVMFunction fn, LLVMLabelType label, LLVMDataValue op1, LLVMDataValue op2, boolean isExact) throws LLVMException
+	public static LLVMSDivInst create(LLVMFunction fn, LLVMLabelType parentLabelType, LLVMDataValue op1, LLVMDataValue op2, boolean isExact) throws LLVMException
 	{
 		var instruction = new LLVMSDivInst(fn, op1, op2, isExact);
 		
 		// Register instruction if automatic registration is enabled.
 		if (fn.autoRegisterInstructions())
-			fn.registersInstructionIntoLabelSection(label, instruction);
+			parentLabelType.registerInstruction(instruction);
 		
 		return instruction;
 	}

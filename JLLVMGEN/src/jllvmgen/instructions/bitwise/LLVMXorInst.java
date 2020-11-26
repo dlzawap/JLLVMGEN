@@ -84,12 +84,24 @@ public class LLVMXorInst implements ILLVMBaseInst
 	
 	public static LLVMXorInst create(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2) throws LLVMException
 	{
-		return new LLVMXorInst(fn, op1, op2);
+		var instruction = new LLVMXorInst(fn, op1, op2);
+
+		// Register instruction if automatic registration is enabled.
+		if (fn.autoRegisterInstructions())
+			fn.registerInstruction(instruction);
+		
+		return instruction;
 	}
 	
-	public static LLVMXorInst create(LLVMFunction fn, LLVMLabelType label, LLVMDataValue op1, LLVMDataValue op2) throws LLVMException
+	public static LLVMXorInst create(LLVMFunction fn, LLVMLabelType parentLabelType, LLVMDataValue op1, LLVMDataValue op2) throws LLVMException
 	{
-		return new LLVMXorInst(fn, op1, op2);
+		var instruction = new LLVMXorInst(fn, op1, op2);
+
+		// Register instruction if automatic registration is enabled.
+		if (fn.autoRegisterInstructions())
+			parentLabelType.registerInstruction(instruction);
+		
+		return instruction;
 	}
 	
 	/*

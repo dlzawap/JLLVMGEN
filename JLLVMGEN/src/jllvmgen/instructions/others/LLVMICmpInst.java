@@ -5,6 +5,7 @@ import jllvmgen.LLVMFunction;
 import jllvmgen.enums.LLVMICompareConditions;
 import jllvmgen.instructions.ILLVMBaseInst;
 import jllvmgen.misc.LLVMException;
+import jllvmgen.types.LLVMLabelType;
 import jllvmgen.types.LLVMValueType;
 
 public class LLVMICmpInst implements ILLVMBaseInst
@@ -13,11 +14,6 @@ public class LLVMICmpInst implements ILLVMBaseInst
 	private LLVMICompareConditions compareCondition;
 	private LLVMDataValue op1;
 	private LLVMDataValue op2;
-	
-	public static LLVMICmpInst create(LLVMFunction fn, LLVMICompareConditions compareCondition, LLVMDataValue op1, LLVMDataValue op2) throws LLVMException
-	{
-		return new LLVMICmpInst(fn, compareCondition, op1, op2);
-	}
 	
 	public LLVMICmpInst(LLVMFunction fn, LLVMICompareConditions compareCondition, LLVMDataValue op1, LLVMDataValue op2) throws LLVMException
 	{
@@ -44,9 +40,6 @@ public class LLVMICmpInst implements ILLVMBaseInst
 		
 		// Pre-generate result.
 		result = LLVMDataValue.createLocalVariable(fn.getNextFreeLocalVariableValueName(), LLVMValueType.createBool());
-		
-		if (fn.autoRegisterInstructions())
-			fn.registerInst(this);
 	}
 	
 	public LLVMDataValue getResult()
@@ -70,4 +63,34 @@ public class LLVMICmpInst implements ILLVMBaseInst
 		
 		return sb.toString();
 	}
+	
+	/*
+	 * Factory functions.
+	 */
+	
+	public static LLVMICmpInst create(LLVMFunction fn, LLVMICompareConditions compareCondition, LLVMDataValue op1, LLVMDataValue op2) throws LLVMException
+	{
+		var instruction = new LLVMICmpInst(fn, compareCondition, op1, op2);
+		
+		// Register instruction if automatic registration is enabled.
+		if (fn.autoRegisterInstructions())
+			fn.registerInstruction(instruction);
+		
+		return instruction;
+	}
+	
+	public static LLVMICmpInst create(LLVMFunction fn, LLVMLabelType parentLabelType, LLVMICompareConditions compareCondition, LLVMDataValue op1, LLVMDataValue op2) throws LLVMException
+	{
+		var instruction = new LLVMICmpInst(fn, compareCondition, op1, op2);
+		
+		// Register instruction if automatic registration is enabled.
+		if (fn.autoRegisterInstructions())
+			parentLabelType.registerInstruction(instruction);
+		
+		return instruction;
+	}
+	
+	/*
+	 * End of factory functions.
+	 */
 }

@@ -38,18 +38,18 @@ public class BinaryInstructionTest
 					.create(fn, fn.getNextFreeLocalPointerValueName(), LLVMPointerType.createi32(), 4).getResult();
 	
 			// Store value into data pointer.
-			LLVMStoreInst.createInst(fn, LLVMDataValue.createConstant(fn, "const1", LLVMValueType.createi32(), "5"), p1);
-			LLVMStoreInst.createInst(fn, LLVMDataValue.createConstant(fn, "const2", LLVMValueType.createi32(), "4"), p2);
+			LLVMStoreInst.create(fn, LLVMDataValue.createConstant(fn, "const1", LLVMValueType.createi32(), "5"), p1);
+			LLVMStoreInst.create(fn, LLVMDataValue.createConstant(fn, "const2", LLVMValueType.createi32(), "4"), p2);
 	
 			// Load value from operands.
-			var op1 = LLVMLoadInst.createInst(fn, p1).getResult();
-			var op2 = LLVMLoadInst.createInst(fn, p2).getResult();
+			var op1 = LLVMLoadInst.create(fn, p1).getResult();
+			var op2 = LLVMLoadInst.create(fn, p2).getResult();
 	
 			// Append add instruction.
 			var add = LLVMAddInst.create(fn, op1, op2, false, true);
 	
 			// Store result into resultPtr.
-			LLVMStoreInst.createInst(fn, add.getResult(), resultPtr);
+			LLVMStoreInst.create(fn, add.getResult(), resultPtr);
     	}
     	catch (LLVMException ex)
     	{

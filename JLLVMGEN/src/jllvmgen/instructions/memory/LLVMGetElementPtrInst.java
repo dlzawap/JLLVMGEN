@@ -5,6 +5,7 @@ import jllvmgen.LLVMDataPointer;
 import jllvmgen.instructions.ILLVMBaseInst;
 import jllvmgen.misc.LLVMException;
 import jllvmgen.types.ILLVMMemoryType;
+import jllvmgen.types.LLVMLabelType;
 
 public class LLVMGetElementPtrInst  implements ILLVMBaseInst
 {
@@ -12,16 +13,6 @@ public class LLVMGetElementPtrInst  implements ILLVMBaseInst
 	private ILLVMMemoryType type;
 	private LLVMDataPointer pointer;
 	private int[] indexes;
-	
-	public static LLVMGetElementPtrInst createInst(LLVMFunction fn, LLVMDataPointer pointer, int index) throws LLVMException
-	{
-		return new LLVMGetElementPtrInst(fn, pointer, new int[] { index });
-	}
-	
-	public static LLVMGetElementPtrInst createInst(LLVMFunction fn, LLVMDataPointer pointer, int[] indexes) throws LLVMException
-	{
-		return new LLVMGetElementPtrInst(fn, pointer, indexes);
-	}
 	
 	private LLVMGetElementPtrInst(LLVMFunction fn, LLVMDataPointer pointer, int[] indexes) throws LLVMException
 	{
@@ -40,10 +31,6 @@ public class LLVMGetElementPtrInst  implements ILLVMBaseInst
 		
 		// Pre-generate result pointer.
 		result = LLVMDataPointer.createLocalVariable(fn.getNextFreeLocalPointerValueName(), type);
-		
-		// Register instruction.
-		if (fn.autoRegisterInstructions())
-			fn.registerInst(this);
 	}
 	
 	public LLVMDataPointer getResultPointer()
@@ -69,4 +56,56 @@ public class LLVMGetElementPtrInst  implements ILLVMBaseInst
 		
 		return sb.toString();
 	}
+	
+	/*
+	 * Factory functions.
+	 */
+	
+	public static LLVMGetElementPtrInst create(LLVMFunction fn, LLVMDataPointer pointer, int index) throws LLVMException
+	{
+		var instruction = new LLVMGetElementPtrInst(fn, pointer, new int[] { index });
+		
+		// Register instruction if automatic registration is enabled.
+		if (fn.autoRegisterInstructions())
+			fn.registerInstruction(instruction);
+		
+		return instruction;
+	}
+	
+	public static LLVMGetElementPtrInst create(LLVMFunction fn, LLVMDataPointer pointer, int[] indexes) throws LLVMException
+	{
+		var instruction = new LLVMGetElementPtrInst(fn, pointer, indexes);
+		
+		// Register instruction if automatic registration is enabled.
+		if (fn.autoRegisterInstructions())
+			fn.registerInstruction(instruction);
+		
+		return instruction;
+	}
+	
+	public static LLVMGetElementPtrInst create(LLVMFunction fn, LLVMLabelType parentLabelType, LLVMDataPointer pointer, int index) throws LLVMException
+	{
+		var instruction = new LLVMGetElementPtrInst(fn, pointer, new int[] { index });
+		
+		// Register instruction if automatic registration is enabled.
+		if (fn.autoRegisterInstructions())
+			parentLabelType.registerInstruction(instruction);
+		
+		return instruction;
+	}
+	
+	public static LLVMGetElementPtrInst create(LLVMFunction fn, LLVMLabelType parentLabelType, LLVMDataPointer pointer, int[] indexes) throws LLVMException
+	{
+		var instruction = new LLVMGetElementPtrInst(fn, pointer, indexes);
+		
+		// Register instruction if automatic registration is enabled.
+		if (fn.autoRegisterInstructions())
+			parentLabelType.registerInstruction(instruction);
+		
+		return instruction;
+	}
+	
+	/*
+	 * End of factory functions.
+	 */
 }

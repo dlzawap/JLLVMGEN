@@ -5,6 +5,7 @@ import jllvmgen.LLVMDataPointer;
 import jllvmgen.LLVMDataValue;
 import jllvmgen.instructions.ILLVMBaseInst;
 import jllvmgen.misc.LLVMException;
+import jllvmgen.types.LLVMLabelType;
 import jllvmgen.types.LLVMValueType;
 
 /**
@@ -16,17 +17,6 @@ public class LLVMStoreInst  implements ILLVMBaseInst {
 	private LLVMDataPointer pointer;
 	
 	private Integer align;
-	
-	
-	public static LLVMStoreInst createInst(LLVMFunction fn, LLVMDataValue value, LLVMDataPointer pointer) throws LLVMException
-	{
-		return new LLVMStoreInst(fn, value, pointer, null);
-	}
-	
-	public static LLVMStoreInst createInst(LLVMFunction fn, LLVMDataValue value, LLVMDataPointer pointer, int align) throws LLVMException
-	{
-		return new LLVMStoreInst(fn, value, pointer, align);
-	}
 	
 	/**
 	 * @param value should be a constant or local variable.
@@ -58,10 +48,6 @@ public class LLVMStoreInst  implements ILLVMBaseInst {
 		this.value = value;
 		this.pointer = pointer;
 		this.align = align;
-		
-		// Register instruction
-		if (fn.autoRegisterInstructions())
-			fn.registerInst(this);
 	}
 	
 	/**
@@ -92,4 +78,56 @@ public class LLVMStoreInst  implements ILLVMBaseInst {
 		
 		return sb.toString();
 	}
+	
+	/*
+	 * Factory functions.
+	 */
+	
+	public static LLVMStoreInst create(LLVMFunction fn, LLVMDataValue value, LLVMDataPointer pointer) throws LLVMException
+	{
+		var instruction = new LLVMStoreInst(fn, value, pointer, null);
+		
+		// Register instruction if automatic registration is enabled.
+		if (fn.autoRegisterInstructions())
+			fn.registerInstruction(instruction);
+		
+		return instruction;
+	}
+	
+	public static LLVMStoreInst create(LLVMFunction fn, LLVMDataValue value, LLVMDataPointer pointer, int align) throws LLVMException
+	{
+		var instruction = new LLVMStoreInst(fn, value, pointer, align);
+		
+		// Register instruction if automatic registration is enabled.
+		if (fn.autoRegisterInstructions())
+			fn.registerInstruction(instruction);
+		
+		return instruction;
+	}
+	
+	public static LLVMStoreInst create(LLVMFunction fn, LLVMLabelType parentLabelType, LLVMDataValue value, LLVMDataPointer pointer) throws LLVMException
+	{
+		var instruction = new LLVMStoreInst(fn, value, pointer, null);
+		
+		// Register instruction if automatic registration is enabled.
+		if (fn.autoRegisterInstructions())
+			parentLabelType.registerInstruction(instruction);
+		
+		return instruction;
+	}
+	
+	public static LLVMStoreInst create(LLVMFunction fn, LLVMLabelType parentLabelType, LLVMDataValue value, LLVMDataPointer pointer, int align) throws LLVMException
+	{
+		var instruction = new LLVMStoreInst(fn, value, pointer, align);
+		
+		// Register instruction if automatic registration is enabled.
+		if (fn.autoRegisterInstructions())
+			parentLabelType.registerInstruction(instruction);
+		
+		return instruction;
+	}
+	
+	/*
+	 * End of factory functions.
+	 */
 }
