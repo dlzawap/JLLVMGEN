@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import jllvmgen.misc.LLVMException;
-import jllvmgen.types.LLVMPointerType;
 
 public class LLVMModule
 {
@@ -15,18 +14,16 @@ public class LLVMModule
 	private String sourceFilename;
 	private ArrayList<LLVMFunction> functions = new ArrayList<LLVMFunction>();
 	
-	private ArrayList<ILLVMVariableType> constants  = new ArrayList<ILLVMVariableType>();
+	private ArrayList<LLVMDataValue> constants  = new ArrayList<LLVMDataValue>();
 	private ArrayList<ILLVMVariableType> globalVariables = new ArrayList<ILLVMVariableType>();
 
-	public static LLVMModule create(String sourceFilename) {
-		return new LLVMModule(sourceFilename);
-	}
-
-	public LLVMModule(String sourceFilename) {
+	public LLVMModule(String sourceFilename)
+	{
 		this.sourceFilename = sourceFilename;
 	}
-
-	public void registerFunction(LLVMFunction fn) {
+	
+	public void registerFunction(LLVMFunction fn)
+	{
 		functions.add(fn);
 	}
 
@@ -71,6 +68,14 @@ public class LLVMModule
 		sb.append('\"' + sourceFilename + "\"\n\n");
 
 		// Append target data layout.
+		for (var constant : constants)
+		{
+			sb.append(constant.getIdentifier());
+			sb.append(" = private unnamed_addr constant ");
+			sb.append(constant.getType().getTypeDefinitionString());
+			sb.append(constant.getValue());
+			sb.append('\n');
+		}
 
 		// Append constants.
 
@@ -109,5 +114,10 @@ public class LLVMModule
 			System.out.println("An error occurred.");
 			e.printStackTrace();
 		}
+	}
+	
+	public static LLVMModule create(String sourceFilename)
+	{
+		return new LLVMModule(sourceFilename);
 	}
 }

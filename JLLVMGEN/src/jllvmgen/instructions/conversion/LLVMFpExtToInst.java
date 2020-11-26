@@ -13,7 +13,7 @@ public class LLVMFpExtToInst implements ILLVMBaseInst
 	private LLVMDataValue result;
 	private LLVMDataValue value;
 	
-	public LLVMFpExtToInst(LLVMFunction fn, LLVMDataValue value, ILLVMMemoryType type) throws LLVMException
+	private LLVMFpExtToInst(LLVMFunction fn, LLVMDataValue value, ILLVMMemoryType type) throws LLVMException
 	{
 		if (fn == null)
 			throw new LLVMException("Parameter \"fn\" is null or empty.");

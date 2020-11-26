@@ -18,7 +18,7 @@ public class LLVMUDivInst implements ILLVMBaseInst
 	private LLVMDataValue op2;
 	private boolean isExact;
 	
-	public LLVMUDivInst(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2, boolean isExact) throws LLVMException
+	private LLVMUDivInst(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2, boolean isExact) throws LLVMException
 	{
 		if (fn == null)
 			throw new LLVMException("Parameter \"fn\" is null or empty.");

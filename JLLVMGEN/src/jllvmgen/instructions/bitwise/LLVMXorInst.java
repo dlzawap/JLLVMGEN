@@ -18,7 +18,7 @@ public class LLVMXorInst implements ILLVMBaseInst
 	private LLVMDataValue op1;
 	private LLVMDataValue op2;
 	
-	public LLVMXorInst(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2) throws LLVMException
+	private LLVMXorInst(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2) throws LLVMException
 	{
 		if (fn == null)
 			throw new LLVMException("Parameter \"fn\" is null or empty.");

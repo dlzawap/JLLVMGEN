@@ -21,7 +21,7 @@ public class LLVMAddInst implements ILLVMBaseInst
 	private boolean noUnsignedWrap;
 	private boolean noSignedWrap;
 	
-	public LLVMAddInst(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2, boolean noUnsignedWrap, boolean noSignedWrap) throws LLVMException
+	private LLVMAddInst(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2, boolean noUnsignedWrap, boolean noSignedWrap) throws LLVMException
 	{
 		if (fn == null)
 			throw new LLVMException("Parameter \"fn\" is null or empty.");

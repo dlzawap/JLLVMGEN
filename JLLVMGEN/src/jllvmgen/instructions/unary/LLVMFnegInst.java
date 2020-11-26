@@ -20,7 +20,7 @@ public class LLVMFnegInst implements ILLVMBaseInst
 	private LLVMDataValue value;
 	private LLVMFastMathFlags[] fastMathFlags;
 	
-	public LLVMFnegInst(LLVMFunction fn, LLVMDataValue value, LLVMFastMathFlags[] fastMathFlags) throws LLVMException
+	private LLVMFnegInst(LLVMFunction fn, LLVMDataValue value, LLVMFastMathFlags[] fastMathFlags) throws LLVMException
 	{
 		if (fn == null)
 			throw new LLVMException("Parameter \"function\" is null or empty.");

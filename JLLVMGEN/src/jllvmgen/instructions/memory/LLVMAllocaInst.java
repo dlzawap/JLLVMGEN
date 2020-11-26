@@ -20,7 +20,7 @@ public class LLVMAllocaInst implements ILLVMBaseInst
 	private KeyValueList<ILLVMMemoryType, Integer> subTypes;
 	private Integer align;
 	
-	public LLVMAllocaInst(LLVMFunction fn, String identifier, LLVMPointerType resultType,
+	private LLVMAllocaInst(LLVMFunction fn, String identifier, LLVMPointerType resultType,
 			KeyValueList<ILLVMMemoryType, Integer> subTypes, Integer align) throws LLVMException
 	{
 		if (fn == null)

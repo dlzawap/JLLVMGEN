@@ -20,7 +20,7 @@ public class LLVMFMulInst implements ILLVMBaseInst
 	private LLVMDataValue op2;
 	private LLVMFastMathFlags[] fastMathFlags;
 	
-	public LLVMFMulInst(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2, LLVMFastMathFlags[] fastMathFlags) throws LLVMException
+	private LLVMFMulInst(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2, LLVMFastMathFlags[] fastMathFlags) throws LLVMException
 	{
 		if (fn == null)
 			throw new LLVMException("Parameter \"fn\" is null or empty.");

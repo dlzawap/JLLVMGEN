@@ -20,7 +20,7 @@ public class LLVMSDivInst implements ILLVMBaseInst
 	private LLVMDataValue op2;
 	private boolean isExact;
 	
-	public LLVMSDivInst(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2, boolean isExact) throws LLVMException
+	private LLVMSDivInst(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2, boolean isExact) throws LLVMException
 	{
 		if (fn == null)
 			throw new LLVMException("Parameter \"fn\" is null or empty.");

@@ -22,7 +22,7 @@ public class LLVMSubInst implements ILLVMBaseInst
 	private boolean noUnsignedWrap;
 	private boolean noSignedWrap;
 	
-	public LLVMSubInst(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2, boolean noUnsignedWrap, boolean noSignedWrap) throws LLVMException
+	private LLVMSubInst(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2, boolean noUnsignedWrap, boolean noSignedWrap) throws LLVMException
 	{
 		if (fn == null)
 			throw new LLVMException("Parameter \"fn\" is null or empty.");

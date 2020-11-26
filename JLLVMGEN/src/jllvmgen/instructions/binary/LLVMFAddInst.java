@@ -21,7 +21,7 @@ public class LLVMFAddInst implements ILLVMBaseInst
 	private LLVMDataValue op2;
 	private LLVMFastMathFlags[] fastMathFlags;
 	
-	public LLVMFAddInst(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2, LLVMFastMathFlags[] fastMathFlags) throws LLVMException
+	private LLVMFAddInst(LLVMFunction fn, LLVMDataValue op1, LLVMDataValue op2, LLVMFastMathFlags[] fastMathFlags) throws LLVMException
 	{
 		if (fn == null)
 			throw new LLVMException("Parameter \"fn\" is null or empty.");

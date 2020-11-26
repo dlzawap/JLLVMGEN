@@ -13,7 +13,7 @@ public class LLVMZExtToInst implements ILLVMBaseInst
 	private LLVMDataValue result;
 	private LLVMDataValue value;
 	
-	public LLVMZExtToInst(LLVMFunction fn, LLVMDataValue value, ILLVMMemoryType type) throws LLVMException
+	private LLVMZExtToInst(LLVMFunction fn, LLVMDataValue value, ILLVMMemoryType type) throws LLVMException
 	{
 		if (fn == null)
 			throw new LLVMException("Parameter \"fn\" is null or empty.");
