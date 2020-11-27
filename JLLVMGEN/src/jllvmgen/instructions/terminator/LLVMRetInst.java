@@ -22,7 +22,7 @@ public class LLVMRetInst implements ILLVMBaseInst
 			return "ret void";
 		
 		
-		return "ret" + value.getType() + " " + value.getValue();
+		return "ret " + value.getType().getTypeDefinitionString() + " " + value.getValue();
 	}
 	
 	/*

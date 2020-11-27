@@ -58,7 +58,7 @@ public class LLVMFCmpInst implements ILLVMBaseInst
 		sb.append(op1.getType().getTypeDefinitionString());
 		sb.append(" ");
 		sb.append(op1.getIdentifierOrValue());
-		sb.append(" ");
+		sb.append(", ");
 		sb.append(op2.getIdentifierOrValue());
 		
 		return sb.toString();

@@ -79,6 +79,11 @@ public class LLVMFunction
 		return "label" + (numberOfDefinedLabels++);
 	}
 	
+	public String getFunctionName()
+	{
+		return name;
+	}
+	
 	public boolean autoRegisterInstructions()
 	{
 		return module.autoRegisterInstructions();

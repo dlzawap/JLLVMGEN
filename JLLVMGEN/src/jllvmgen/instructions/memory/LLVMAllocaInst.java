@@ -49,7 +49,7 @@ public class LLVMAllocaInst implements ILLVMBaseInst
 	{
 		StringBuilder sb = new StringBuilder(result.getIdentifier());
 		sb.append(" = alloca ");
-		sb.append(result.getType().getTypeDefinitionString());
+		sb.append(result.getType().getBaseType().getTypeDefinitionString());
 		
 		// Append defined sub types.
 		if (subTypes != null)
